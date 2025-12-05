@@ -1,4 +1,6 @@
 package hoang.shop.identity.dto.request;
 
-public record DeleteAccountRequest() {
+public record DeleteAccountRequest(
+        String password
+) {
 }

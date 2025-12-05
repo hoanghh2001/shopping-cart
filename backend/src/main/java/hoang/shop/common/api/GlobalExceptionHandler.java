@@ -29,37 +29,29 @@ public class GlobalExceptionHandler {
 
     private final MessageSource messageSource;
 
-    // ===== Helpers ===========================================================
 
-    /** Resolve message key like "{user.lastName.required}" -> localized text. */
     private String resolveMessage(String keyOrText) {
         if (keyOrText == null) return null;
-        String cleanKey = keyOrText.replaceAll("[{}]", ""); // bỏ ngoặc nếu có
+        String cleanKey = keyOrText.replaceAll("[{}]", "");
         Locale locale = LocaleContextHolder.getLocale();
-        // Nếu không tìm thấy key -> trả lại key để debug, không ném NoSuchMessageException
         return messageSource.getMessage(cleanKey, null, cleanKey, locale);
     }
 
-    /** Build ProblemDetail từ detail (string) — set đầy đủ RFC 7807 fields. */
     private ProblemDetail problem(HttpStatus status, String title, String detail, HttpServletRequest req) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(status, detail);
         pd.setTitle(title);
         pd.setType(URI.create("about:blank"));
         pd.setProperty("timestamp", Instant.now().toString());
-        pd.setProperty("instance", req.getRequestURI());
+        pd.setInstance(URI.create(req.getRequestURI()));
         return pd;
     }
 
-    /** Build ProblemDetail từ Exception — tự i18n message key trong ex.getMessage(). */
     private ProblemDetail problem(HttpStatus status, String title, Exception ex, HttpServletRequest req) {
         return problem(status, title, resolveMessage(ex.getMessage()), req);
     }
 
-    // ===== Handlers ==========================================================
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
-        // Dịch message cho từng field nếu là dạng key {…}
         Map<String, String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -69,11 +61,10 @@ public class GlobalExceptionHandler {
                             String msg = fe.getDefaultMessage();
                             return msg == null ? "Invalid" : resolveMessage(msg);
                         },
-                        (a, b) -> a // nếu trùng field, giữ message đầu
+                        (a, b) -> a
                 ));
 
-        // Title + detail cũng qua i18n key (tùy bạn có đặt trong messages.properties hay không)
-        String title = resolveMessage("error.validation.title");  // nếu không có key -> "error.validation.title"
+        String title = resolveMessage("error.validation.title");
         if ("error.validation.title".equals(title)) title = "Validation failed";
         String detail = resolveMessage("error.validation.detail");
         if ("error.validation.detail".equals(detail)) detail = "One or more fields are invalid.";
@@ -85,16 +76,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ProblemDetail handleNotFound(NotFoundException ex, HttpServletRequest req) {
-        return problem(HttpStatus.NOT_FOUND, resolveMessage("error.notfound.title"), ex, req);
-        // nếu thiếu key "error.notfound.title" -> trả chính key; bạn có thể thêm vào messages.properties:
-        // error.notfound.title=Not Found
+        return problem(HttpStatus.NOT_FOUND, resolveMessage("error.not-found.title"), ex, req);
     }
 
     @ExceptionHandler({ BadRequestException.class, IllegalArgumentException.class, IllegalStateException.class })
     public ProblemDetail handleBadRequest(RuntimeException ex, HttpServletRequest req) {
-        return problem(HttpStatus.BAD_REQUEST, resolveMessage("error.badrequest.title"), ex, req);
-        // messages.properties:
-        // error.badrequest.title=Bad Request
+        return problem(HttpStatus.BAD_REQUEST, resolveMessage("error.bad-request.title"), ex, req);
     }
     @ExceptionHandler(DuplicateResourceException.class)
     public ProblemDetail handleDuplicate(DuplicateResourceException ex, HttpServletRequest req) {
@@ -103,15 +90,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ProblemDetail handleConflict(DataIntegrityViolationException ex, HttpServletRequest req) {
-        // Detail dùng key chung để bạn có thể dịch:
         String detail = resolveMessage("error.conflict.detail");
         if ("error.conflict.detail".equals(detail)) {
             detail = "Resource state conflicts with existing data (unique constraint or FK).";
         }
         return problem(HttpStatus.CONFLICT, resolveMessage("error.conflict.title"), detail, req);
-        // messages.properties:
-        // error.conflict.title=Conflict
-        // error.conflict.detail=既存データと矛盾しています。（一意制約もしくは外部キー制約）
     }
 
 

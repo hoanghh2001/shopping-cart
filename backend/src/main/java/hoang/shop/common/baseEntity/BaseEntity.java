@@ -18,12 +18,11 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
 
     @CreatedDate
     @Column(name ="created_at",updatable = false)
+    @Builder.Default
     private Instant createdAt = Instant.now();
 
     @CreatedBy

@@ -3,16 +3,15 @@ package hoang.shop.categories.dto.response;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-public record AdminProductVariantResponse(
+public record AdminVariantResponse(
         Long id,
         Long sku,
         String size,
         Integer stock,
         String imageUrl,
-        BigDecimal originalPrice,
-        BigDecimal discountPrice,
+        BigDecimal regularPrice,
+        BigDecimal salePrice,
         String status,
-        boolean isDefault,
 
         Instant createdAt,
         Long createdBy,

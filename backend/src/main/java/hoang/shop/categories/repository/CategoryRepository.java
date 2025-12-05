@@ -1,7 +1,7 @@
 package hoang.shop.categories.repository;
 
 import hoang.shop.categories.model.Category;
-import hoang.shop.common.enums.status.CategoryStatus;
+import hoang.shop.common.enums.CategoryStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface CategoryRepository extends JpaRepository<Category,Long> {
     boolean existsByName(String name);
     boolean existsBySlug(String slug);
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
             UPDATE Category c
@@ -26,12 +27,7 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
 
     Category findByName(String name);
     Category findBySlug(String slug);
-    @Query("""
-            SELECT c
-            FROM Category c
-            WHERE :status IS NULL OR c.status = :status
-            """)
-    Slice<Category> findAllByStatus(@Param("status") CategoryStatus status, Pageable pageable);
+
     @Query("""
             SELECT c
             FROM Category c
@@ -39,6 +35,7 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
             WHERE p.id = :id
             """)
     Slice<Category> findByProductId(@Param("id") Long id, Pageable pageable);
+
     @Query("""
             SELECT c
             FROM Category c
@@ -46,4 +43,8 @@ public interface CategoryRepository extends JpaRepository<Category,Long> {
             WHERE c.id = :id
             """)
     Optional<Category> findWithProductsById(@Param("id") Long id);
+    Optional<Category> findBySlugAndStatus(String slug, CategoryStatus categoryStatus);
+    Optional<Category> findByIdAndStatus(Long brandId, CategoryStatus categoryStatus);
+    Slice<Category> findAllByStatus(CategoryStatus status, Pageable pageable);
+
 }

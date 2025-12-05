@@ -1,6 +1,6 @@
 package hoang.shop.categories.dto.response;
 
-public record ProductColorImageResponse(
+public record ImageResponse(
         Long id,
         String imageUrl,
         String altText,

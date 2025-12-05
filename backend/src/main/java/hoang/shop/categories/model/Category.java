@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import hoang.shop.common.baseEntity.BaseEntity;
-import hoang.shop.common.enums.status.CategoryStatus;
+import hoang.shop.common.enums.CategoryStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,15 +25,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category extends BaseEntity {
+
     //constraint
-    @OneToMany(mappedBy = "category",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "category",cascade = CascadeType.PERSIST)
     private List<Product> products = new ArrayList<>();
 
-    @OneToMany(mappedBy = "parent",cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "parent",cascade = CascadeType.PERSIST)
     private List<Category> children = new ArrayList<>() ;
 
 
     //field
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false,length = 100)
     private String name;

@@ -10,12 +10,18 @@ import hoang.shop.common.baseEntity.BaseEntity;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class Address extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+
     @ManyToOne
     @JoinColumn(name = "user_id",nullable = false,
                 foreignKey = @ForeignKey(name = "fk_addresses_user_id_users"))
     private User user;
 
-    private String fullName;
+    @Column(name = "name",nullable = false)
+    private String name;
 
     @Column(nullable = false)
     private String phone;
@@ -23,22 +29,33 @@ public class Address extends BaseEntity {
     @Column(name = "postal_code",nullable = false)
     private String postalCode;
 
-    @Column(name = "address_line1",nullable = false)
-    private String addressLine1;
-
-    @Column(name = "address_line2",nullable = false)
-    private String addressLine2;
+    @Column(nullable = false)
+    private String prefecture;
 
     @Column(nullable = false)
-    private String city;
+    private String municipality;
 
-    @Column(nullable = false)
-    private String state;
+    private Integer chome;
+
+    private Integer ban;
+
+    private Integer go;
+    @Column(name = "street_number",nullable = false)
+    private String streetNumber;
+
+    @Column(name = "building")
+    private String building;
+    @Column(name = "room-number")
+    private String roomNumber;
+    @Column(name = "full_address")
+    private String fullAddress;
 
     @Column(nullable = false)
     private String country = "Japan";
+
     @Column(name = "is_default",nullable = false)
-    private boolean defaultAddress = true;
+    private boolean isDefault = false;
+
     @Column(nullable = false)
     private boolean deleted = false;
 

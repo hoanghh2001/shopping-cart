@@ -2,12 +2,15 @@ package hoang.shop.categories.dto.response;
 
 import hoang.shop.common.enums.ProductVariantStatus;
 
-public record ProductVariantResponse(
+import java.math.BigDecimal;
+
+public record VariantResponse(
         Long id,
         String size,
         Integer stock,
-        ProductVariantStatus status,
-        boolean isDefault
+        BigDecimal regularPrice,
+        BigDecimal salePrice,
+        ProductVariantStatus status
 
 ) {
 }

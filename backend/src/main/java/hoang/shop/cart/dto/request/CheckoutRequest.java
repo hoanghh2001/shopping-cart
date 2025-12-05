@@ -1,4 +1,11 @@
 package hoang.shop.cart.dto.request;
 
-public record CheckoutRequest() {
+import hoang.shop.common.enums.PaymentMethod;
+
+public record CheckoutRequest(
+        String name,
+        Long addressId,
+        PaymentMethod paymentMethod,
+        String note
+) {
 }

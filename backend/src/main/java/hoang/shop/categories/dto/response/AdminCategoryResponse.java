@@ -1,19 +1,22 @@
 package hoang.shop.categories.dto.response;
 
-import hoang.shop.common.enums.BrandStatus;
 import hoang.shop.common.enums.CategoryStatus;
 
 import java.time.Instant;
 
-public record AdminCategoryDetailResponse(
+public record AdminCategoryResponse(
         Long id,
         String name,
         String slug,
         CategoryResponse parent,
         String imageUrl,
         CategoryStatus status,
+
         Instant createdAt,
+        Long createdBy,
         Instant updatedAt,
-        Instant deletedAt
+        Long updatedBy,
+        Instant deletedAt,
+        Long deletedBy
 ) {
 }

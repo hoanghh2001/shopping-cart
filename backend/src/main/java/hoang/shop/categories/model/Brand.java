@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import hoang.shop.common.baseEntity.BaseEntity;
-import hoang.shop.common.enums.status.BrandStatus;
+import hoang.shop.common.enums.BrandStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +19,9 @@ import java.util.List;
 @Setter @Getter
 @NoArgsConstructor @AllArgsConstructor
 public class Brand extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
@@ -37,15 +40,5 @@ public class Brand extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false,length = 20)
     private BrandStatus status = BrandStatus.ACTIVE;
-
-    public void addProduct(Product product){
-        products.add(product);
-        product.setBrand(this);
-    }
-    public void removeProduct(Product product){
-        products.remove(product);
-        product.setBrand(null);
-    }
-
 
 }

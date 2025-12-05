@@ -1,4 +1,21 @@
 package hoang.shop.categories.dto.response;
 
-public record AdminTagResponse() {
+import hoang.shop.common.enums.TagStatus;
+
+import java.time.Instant;
+
+public record AdminTagResponse(
+        Long id,
+        String name,
+        String slug,
+        String description,
+        TagStatus status,
+
+        Instant createdAt,
+        Long createdBy,
+        Instant updatedAt,
+        Long updatedBy,
+        Instant deletedAt,
+        Long deletedBy
+) {
 }

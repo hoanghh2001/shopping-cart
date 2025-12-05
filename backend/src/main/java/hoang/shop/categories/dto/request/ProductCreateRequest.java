@@ -6,19 +6,15 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public record ProductCreateRequest (
+        Long brandId,
+
+        @NotNull
+        Long categoryId,
+
         @NotBlank
         String name,
-        String description,
-        @NotBlank
-        String slug,
-        @NotNull
-        BigDecimal price,
-        @NotNull
-        BigDecimal discountPrice,
-        @NotNull
-        Integer stockQuantity,
-        Long brandId,
-        Long categoryId
+
+        String description
 
 ){
 }

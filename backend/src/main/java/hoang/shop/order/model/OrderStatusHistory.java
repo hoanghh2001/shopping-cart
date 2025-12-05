@@ -1,13 +1,22 @@
 package hoang.shop.order.model;
 
 import jakarta.persistence.*;
-import hoang.shop.common.enums.status.ChangedByType;
-import hoang.shop.common.enums.status.OrderStatus;
+import hoang.shop.common.enums.ChangedByType;
+import hoang.shop.common.enums.OrderStatus;
+import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 
 @Entity
 @Table(name = "order_status_histories")
+@Builder
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class OrderStatusHistory  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,8 +39,12 @@ public class OrderStatusHistory  {
     private String note;
     @Column(name = "changed_at")
     private Instant changedAt;
+    @CreatedDate
     @Column(name = "created_at")
     private Instant createdAt;
+    @CreatedBy
+    @Column(name = "created_by")
+    private Long createdBy;
     @PrePersist
     public void prePersist() {
         Instant now = Instant.now();

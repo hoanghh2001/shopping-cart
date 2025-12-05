@@ -1,4 +1,5 @@
 package hoang.shop.common.enums.status;
 
-public enum ProducReviewStatus {
+public enum ProductReviewStatus {
+    ACTIVE,DELETED
 }

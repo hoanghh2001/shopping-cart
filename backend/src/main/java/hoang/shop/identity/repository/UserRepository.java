@@ -3,6 +3,7 @@ package hoang.shop.identity.repository;
 import hoang.shop.identity.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,6 +21,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
                OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%'))
             """)
     Page<User> searchByKeyword(@Param("keyword") String keyword,Pageable pageable);
+    @EntityGraph(attributePaths = {"userRoles", "userRoles.role"})
     Optional<User> findByEmail(String email);
     Optional<User> findByPhone(String phone);
 
@@ -32,4 +34,5 @@ public interface UserRepository extends JpaRepository<User,Long> {
             """)
     int softDeleteById(@Param("id") Long id);
 
+    Optional<User> findByEmailAndDeletedFalse(String email);
 }

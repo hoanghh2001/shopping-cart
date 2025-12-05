@@ -4,38 +4,36 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
 public record AddressCreateRequest(
-        Long userId,
+        String name,
 
-        @NotBlank(message = "{address.fullName.notBlank}")
-        @Size(max = 100, message = "{address.fullName.size}")
-        String fullName,
-
-        @NotBlank(message = "{address.phone.notBlank}")
-        @Size(max = 16, message = "{address.phone.size}")
-        @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$",
-                message = "{address.phone.size}")
         String phone,
 
-        @NotBlank(message = "{address.postalCode.notBlank}")
-        @Pattern(regexp = "^\\d{3}-?\\d{4}$",
-                message = "{address.postalCode.pattern}")
+        @Pattern(
+                regexp = "^\\d{3}-?\\d{4}$",
+                message = "error.address.postal-code.format")
         String postalCode,
 
-        @NotBlank(message = "{address.addressLine1.pattern}")
-        String addressLine1,
+        @Pattern(
+                regexp = "^.+[都道府県]$",
+                message = "{error.address.prefecture.invalid}")
+        String prefecture,
 
+        @Pattern(
+                regexp = "^.+[市区町村]$",
+                message = "{error.address.municipality.invalid}")
+        String municipality,
 
-        String addressLine2,
+        @Pattern(
+                regexp = "^([0-9]+(-[0-9]+){1," +
+                        "2}|[0-9]+丁目[0-9]+番([0-9]+号)?)$",
+                message = "{error.address.street-number.invalid}")
+        String streetNumber,
 
-        @NotBlank(message = "{address.city.notBlank}")
-        String city,
+        String building,
 
-        @NotBlank(message = "{address.state.notBlank}")
-        String state,
-
-        @NotBlank(message = "{address.state.country}")
-        String country
+        String roomNumber
 ) {
 }

@@ -2,32 +2,31 @@ package hoang.shop.categories.service;
 
 import hoang.shop.categories.dto.request.CategoryCreateRequest;
 import hoang.shop.categories.dto.request.CategoryUpdateRequest;
-import hoang.shop.categories.dto.request.IdListRequest;
-import hoang.shop.categories.dto.response.CategoryResponse;
-import hoang.shop.common.enums.status.CategoryStatus;
+import hoang.shop.categories.dto.response.AdminCategoryResponse;
+import hoang.shop.categories.dto.response.CategoryDetailResponse;
+import hoang.shop.common.IdListRequest;
+import hoang.shop.common.enums.CategoryStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 public interface CategoryService {
-    //create
-    CategoryResponse create(CategoryCreateRequest createRequest);
-    //update
-    CategoryResponse update(Long categoryId, CategoryUpdateRequest updateRequest);
-    CategoryResponse replaceParent(Long categoryId, Long parentId);
-    CategoryResponse unsetParent(Long categoryId);
-    //read
-    CategoryResponse findById(Long id);
-    CategoryResponse findByName(String name);
-    CategoryResponse findBySlug(String slug);
-    //read list
-    Slice<CategoryResponse> findAllByStatus(CategoryStatus status, Pageable pageable);
-    //update status
+
+    //Admin
+    AdminCategoryResponse create(CategoryCreateRequest createRequest);
+    AdminCategoryResponse update(Long categoryId, CategoryUpdateRequest updateRequest);
+    AdminCategoryResponse replaceParent(Long categoryId, Long parentId);
+    AdminCategoryResponse unsetParent(Long categoryId);
+    AdminCategoryResponse findById(Long id);
+    AdminCategoryResponse findByName(String name);
+    AdminCategoryResponse findBySlug(String slug);
+    Slice<AdminCategoryResponse> findAllByStatus(CategoryStatus status, Pageable pageable);
     boolean updateStatusById(Long id , CategoryStatus categoryStatus);
+    Slice<AdminCategoryResponse> findByProductId(Long id, Pageable pageable);
+    AdminCategoryResponse assignProducts(Long categoryId, IdListRequest ids);
+    AdminCategoryResponse unsetProducts(Long categoryId, IdListRequest ids);
 
-
-    Slice<CategoryResponse> findByProductId(Long id, Pageable pageable);
-
-    CategoryResponse replaceProducts(Long categoryId, IdListRequest ids);
-
-    CategoryResponse unsetProducts(Long categoryId, IdListRequest ids);
+    //User
+    CategoryDetailResponse getActiveBrandBySlug(String slug);
+    CategoryDetailResponse getActiveBrandById(Long brandId);
+    Slice<CategoryDetailResponse> findActiveBrands(Pageable pageable);
 }

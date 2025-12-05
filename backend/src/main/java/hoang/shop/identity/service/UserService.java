@@ -1,7 +1,7 @@
 package hoang.shop.identity.service;
 
 
-import hoang.shop.identity.dto.request.UserCreateRequest;
+import hoang.shop.identity.dto.request.RegisterRequest;
 import hoang.shop.identity.dto.request.UserUpdateRequest;
 import hoang.shop.identity.dto.response.UserResponse;
 import org.springframework.data.domain.Page;
@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface UserService {
     //Create & Update
-    UserResponse createUser(UserCreateRequest userCreateRequest);
+    UserResponse createUser(RegisterRequest registerRequest);
     UserResponse updateUser(Long id, UserUpdateRequest userUpdateRequest);
 
     // Read

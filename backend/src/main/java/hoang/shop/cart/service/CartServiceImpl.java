@@ -64,6 +64,9 @@ public class CartServiceImpl implements CartService{
         if (request.quantity() == null || request.quantity() <= 0) {
             throw new BadRequestException("{error.cart-item.quantity.invalid}");
         }
+        String nameLabel = variant.getColor().getProduct().getName()
+                + " " + variant.getColor().getName()
+                + " " + variant.getSize();
 
 
         List<ProductColorImage> images = variant.getColor().getImages();
@@ -88,7 +91,7 @@ public class CartServiceImpl implements CartService{
                     .cart(cart)
                     .productVariant(variant)
                     .sizeLabel(variant.getSize())
-                    .nameLabel(variant.getColor().getProduct().getName())
+                    .nameLabel(nameLabel)
                     .colorLabel(variant.getColor().getName())
                     .hexLabel(variant.getColor().getHex())
                     .quantity(request.quantity())
@@ -98,6 +101,7 @@ public class CartServiceImpl implements CartService{
                     .imageUrl(imageUrl)
                     .build();
             cart.getCartItems().add(newItem);
+            newItem.setCart(cart);
         }else {
             int oldLineTotalQuantity = item.getQuantity();
             int freshLineTotalQuantity = oldLineTotalQuantity+request.quantity();
@@ -109,13 +113,11 @@ public class CartServiceImpl implements CartService{
         }
         // list số lượng sản phẩm có trong item
         List<Integer> items =  cart.getCartItems().stream().map(CartItem::getQuantity).toList();
-        // tổng số sản phẩm có trên 1 dòng -> lúc chưa thêm vào
+        // tổng số sản phẩm có trên 1 dòng -> lúc sau khi thêm vào
         int oldTotalQuantity = items.stream().reduce(0,Integer::sum);
         // tổng số sản phẩm -> sau khi thêm
-        int freshTotalQuantity = oldTotalQuantity+ request.quantity();
-        cart.setTotalQuantity(freshTotalQuantity);
+        cart.setTotalQuantity(oldTotalQuantity);
         cart.recalculateTotals();
-        cartRepository.save(cart);
         return cartMapper.toResponse(cart);
     }
 

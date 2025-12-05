@@ -1,8 +1,7 @@
 package hoang.shop.categories.service;
 
+import hoang.shop.categories.dto.response.AdminListItemProductResponse;
 import lombok.RequiredArgsConstructor;
-import hoang.shop.categories.dto.response.ProductResponse;
-import hoang.shop.categories.dto.response.TagResponse;
 import hoang.shop.categories.mapper.ProductMapper;
 import hoang.shop.categories.mapper.TagMapper;
 import hoang.shop.categories.model.Product;
@@ -12,8 +11,6 @@ import hoang.shop.categories.repository.ProductTagRepository;
 import hoang.shop.categories.repository.TagRepository;
 import hoang.shop.common.exception.BadRequestException;
 import hoang.shop.common.exception.NotFoundException;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +29,7 @@ public class ProductTagServiceImpl implements ProductTagService{
     private final TagMapper tagMapper;
     private final ProductMapper productMapper;
     @Override
-    public ProductResponse attachTagsToProduct(Long productId, List<Long> tagIds) {
+    public AdminListItemProductResponse attachTagsToProduct(Long productId, List<Long> tagIds) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(()-> new NotFoundException("{error.product.id.not-found}"));
         if (tagIds == null || tagIds.isEmpty())
@@ -52,12 +49,12 @@ public class ProductTagServiceImpl implements ProductTagService{
         for (Long id : distinctIds){
             productTagRepository.insertIfNotExists(product.getId(),id);
         }
-        return productMapper.toResponse(product);
+        return productMapper.toAdminListItemResponse(product);
 
     }
 
     @Override
-    public ProductResponse detachTagsFromProduct(Long productId, List<Long> tagIds) {
+    public AdminListItemProductResponse detachTagsFromProduct(Long productId, List<Long> tagIds) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(()-> new NotFoundException("{error.product.id.not-found}"));
         if (tagIds == null || tagIds.isEmpty())
@@ -74,23 +71,12 @@ public class ProductTagServiceImpl implements ProductTagService{
             throw new NotFoundException("{error.tag.id.not-found}"+missing);
         }
         productTagRepository.deleteByProductAndTagIds(productId, distinctIds);
-        return productMapper.toResponse(product);
+        return productMapper.toAdminListItemResponse(product);
     }
 
-    @Override
-    public Slice<TagResponse> findTagsByProductId(Long productId, Pageable pageable) {
-        if (!productRepository.existsById(productId))
-            throw new NotFoundException("{error.product.id.not-found}");
-        Slice<Tag> tagList = productTagRepository.findTagsByProductId(productId, pageable);
-        return tagList.map(tagMapper::toResponse);
-    }
 
-    @Override
-    public Slice<ProductResponse> findProductsByTagId(Long tagId,Pageable pageable) {
-        if (!productRepository.existsById(tagId))
-            throw new NotFoundException("{error.product.id.not-found}");
-        Slice<Product> productList = productTagRepository.findProductsByTagId(tagId,pageable);
-        return productList.map(productMapper::toResponse);
-    }
+
+
+
 }
 

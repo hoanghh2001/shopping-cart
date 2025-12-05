@@ -1,13 +1,21 @@
 package hoang.shop.categories.dto.request;
 
+import jakarta.validation.constraints.*;
+
 import java.math.BigDecimal;
+import java.util.List;
 
 public record ProductVariantCreateRequest(
-        String name,
-        String  color,
+        @NotBlank
+        @Pattern(regexp = "S|M|L|XL", message = "{error.product-variant.size.invalid}")
         String size,
-        BigDecimal price,
-        BigDecimal compareAtPrice,
-        Integer stockQuantity
+        @NotNull
+        BigDecimal regularPrice,
+        @NotNull
+
+        BigDecimal salePrice,
+        @NotNull
+        @Min(value = 0,message = "{error.product-variant.stock-quantity}")
+        Integer stock
 ) {
 }

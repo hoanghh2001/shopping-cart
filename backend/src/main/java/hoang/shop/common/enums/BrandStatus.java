@@ -1,5 +1,5 @@
-package hoang.shop.common.enums.status;
+package hoang.shop.common.enums;
 
 public enum BrandStatus {
-    ACTIVE,INACTIVE,DISCONTINUED,DELETED
+    ACTIVE,DELETED
 }

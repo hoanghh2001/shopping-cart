@@ -2,15 +2,16 @@ package hoang.shop.cart.dto.response;
 
 import java.math.BigDecimal;
 
-public record CartItemResponse(
-        Long id,
-        Long productVariantId,
-        String productVariantName,
-        String productVariantColor,
-        String productVariantSize,
+public record ItemResponse(
+        Long cartItemId,
+        Long variantId,
+        String nameLabel,
+        String colorLabel,
+        String hexLabel,
+        String sizeLabel,
         Integer quantity,
         BigDecimal unitPriceBefore,
-        BigDecimal unitPrice,
+        BigDecimal unitPriceAtOrder,
         BigDecimal lineTotal,
         String imageUrl
 ) {

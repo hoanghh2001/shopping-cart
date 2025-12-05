@@ -10,4 +10,5 @@ import org.mapstruct.Mapper;
 public interface OrderStatusHistoryMapper {
     OrderStatusHistory toEntity(OrderStatusHistoryCreateRequest request);
     OrderStatusHistoryResponse toResponse(OrderStatusHistory entity);
+
 }

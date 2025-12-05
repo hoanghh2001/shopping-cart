@@ -1,13 +1,12 @@
 package hoang.shop.categories.controller.admin;
 
 
+import hoang.shop.common.enums.TagStatus;
 import lombok.RequiredArgsConstructor;
-import hoang.shop.categories.dto.request.IdListRequest;
 import hoang.shop.categories.dto.request.TagCreateRequest;
 import hoang.shop.categories.dto.request.TagUpdateRequest;
-import hoang.shop.categories.dto.response.TagResponse;
+import hoang.shop.categories.dto.response.AdminTagResponse;
 import hoang.shop.categories.service.TagService;
-import hoang.shop.common.enums.status.TagStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
@@ -17,52 +16,48 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tags")
+@RequestMapping("/api/admin/tags")
 @RequiredArgsConstructor
-public class    TagController {
+public class AdminTagController {
     private final TagService service;
     @PostMapping
-    public ResponseEntity<TagResponse> create(@RequestBody TagCreateRequest createRequest) {
-        TagResponse response = service.create(createRequest);
-        URI location = URI.create("api/tags/"+response.id());
-        return ResponseEntity.created(location).body(response);
+    public ResponseEntity<AdminTagResponse> create(@RequestBody TagCreateRequest createRequest) {
+        AdminTagResponse tag = service.create(createRequest);
+        URI location = URI.create("api/admin/tags/"+tag.id());
+        return ResponseEntity.created(location).body(tag);
     }
-    @PatchMapping("{id}")
-    public ResponseEntity<TagResponse> update(@PathVariable Long id, @RequestBody TagUpdateRequest updateRequest) {
-        TagResponse response = service.update(id, updateRequest);
-        return ResponseEntity.ok(response);
+    @PatchMapping("/{tagId}")
+    public ResponseEntity<AdminTagResponse> update(@PathVariable Long tagId, @RequestBody TagUpdateRequest updateRequest) {
+        AdminTagResponse tag = service.update(tagId, updateRequest);
+        return ResponseEntity.ok(tag);
     }
-    @GetMapping("/products")
-    public ResponseEntity<List<TagResponse>> findTagWithProduct(@RequestParam Long productId) {
-        List<TagResponse> body = service.findTagWithProduct(productId);
-        return ResponseEntity.ok(body);
+    @GetMapping("/{tagId}")
+    public ResponseEntity<AdminTagResponse> getTagById(@PathVariable Long tagId) {
+        AdminTagResponse tag = service.getTagById(tagId);
+        return ResponseEntity.ok(tag);
     }
-    @GetMapping("{tagId}")
-    public ResponseEntity<TagResponse> findById(@PathVariable Long tagId) {
-        TagResponse response = service.findById(tagId);
-        return ResponseEntity.ok(response);
+    @GetMapping("/by-slug")
+    public ResponseEntity<AdminTagResponse> getTagBySlug(@RequestParam String slug) {
+        AdminTagResponse tag = service.getTagBySlug(slug);
+        return ResponseEntity.ok(tag);
     }
-    @GetMapping("/slug")
-    public ResponseEntity<TagResponse> findBySlug(@RequestParam String slug) {
-        TagResponse response = service.findBySlug(slug);
-        return ResponseEntity.ok(response);
-    }
+
     @GetMapping
-    public ResponseEntity<Slice<TagResponse>> findByStatus(@RequestParam(required = false) TagStatus status, Pageable pageable) {
-        Slice<TagResponse> page = service.findByStatus(status, pageable);
-        return ResponseEntity.ok(page);
+    public ResponseEntity<Slice<AdminTagResponse>> findTags(String keyword, TagStatus status, Pageable pageable) {
+        Slice<AdminTagResponse> tags =  service.findTags(keyword, status, pageable);
+        return ResponseEntity.ok(tags);
     }
-    @GetMapping("/name")
-    public ResponseEntity<Slice<TagResponse>> findByName(@RequestParam String name, Pageable pageable) {
-        Slice<TagResponse> page = service.findByName(name, pageable);
-        return ResponseEntity.ok(page);
-    }
+
+
     @PatchMapping("/delete")
-    public ResponseEntity<Integer> deleteById(@RequestBody IdListRequest ids) {
-        return ResponseEntity.ok(service.deleteById(ids));
+    public ResponseEntity<Void> deleteById(@RequestBody List<Long> ids) {
+        service.deleteById(ids);
+        return ResponseEntity.noContent().build();
     }
     @PatchMapping("/restore")
-    public ResponseEntity<Integer> restoreById(@RequestBody IdListRequest ids) {
-        return ResponseEntity.ok(service.restoreById(ids));
+    public ResponseEntity<Integer> restoreById(@RequestBody List<Long> ids) {
+        service.restoreById(ids);
+        return ResponseEntity.noContent().build();
     }
+
 }

@@ -1,4 +1,13 @@
 package hoang.shop.identity.dto.response;
 
-public record SessionInfoResponse() {
+import java.time.Instant;
+
+public record SessionInfoResponse(
+        Long id,
+        String device,
+        String ipAddress,
+        Instant createdAt,
+        Instant expiresAt,
+        boolean current
+) {
 }

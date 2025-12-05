@@ -1,4 +1,4 @@
-package hoang.shop.common.enums.status;
+package hoang.shop.common.enums;
 
 public enum CategoryStatus {
     ACTIVE, INACTIVE, DELETED

@@ -13,6 +13,10 @@ import java.util.Set;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class Role extends BaseEntity {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+
         @OneToMany(mappedBy = "role",cascade = CascadeType.ALL,orphanRemoval = true)
         private Set<UserRole> userRoles = new HashSet<>();
         @Column(nullable = false,length = 12)

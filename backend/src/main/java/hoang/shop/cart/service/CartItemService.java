@@ -2,17 +2,18 @@ package hoang.shop.cart.service;
 
 import hoang.shop.cart.dto.request.CartItemCreateRequest;
 import hoang.shop.cart.dto.request.CartItemUpdateRequest;
-import hoang.shop.cart.dto.response.CartItemResponse;
+import hoang.shop.cart.dto.response.ItemResponse;
 
 import java.util.List;
 
 public interface CartItemService {
-    List<CartItemResponse> findAllByCartId(Long cartId);
+    List<ItemResponse> findAllByCartId(Long cartId);
 
-    CartItemResponse create(Long userId, CartItemCreateRequest request);
+    ItemResponse create(Long userId, CartItemCreateRequest request);
 
-    CartItemResponse update(Long userId, Long itemId, CartItemUpdateRequest request);
+    ItemResponse update(Long userId, Long itemId, CartItemUpdateRequest request);
 
     boolean delete(Long userId, Long itemId);
 
+    List<ItemResponse> findAllByUserId(Long userId);
 }

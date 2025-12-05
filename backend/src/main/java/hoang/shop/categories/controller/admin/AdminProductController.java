@@ -1,86 +1,84 @@
 package hoang.shop.categories.controller.admin;
 
+import hoang.shop.categories.dto.request.*;
+import hoang.shop.categories.dto.response.AdminColorResponse;
+import hoang.shop.categories.dto.response.AdminListItemProductResponse;
+import hoang.shop.categories.service.ProductColorService;
+import hoang.shop.common.IdListRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import hoang.shop.categories.dto.request.IdListRequest;
-import hoang.shop.categories.dto.request.ProductCreateRequest;
-import hoang.shop.categories.dto.request.ProductUpdateRequest;
-import hoang.shop.categories.dto.response.ProductResponse;
 import hoang.shop.categories.service.ProductService;
-import hoang.shop.common.enums.status.ProductStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/products")
 @RequiredArgsConstructor
-public class ProductController {
+public class AdminProductController {
     private final ProductService productService;
+    private final ProductColorService productColorService;
+
+
     @PostMapping
-    public ResponseEntity<ProductResponse> create(@RequestBody ProductCreateRequest createRequest) {
-        ProductResponse response = productService.create(createRequest);
-        URI location = URI.create("/api/products/"+response.id());
-        return ResponseEntity.created(location).body(response);
+    public ResponseEntity<AdminListItemProductResponse> create(@RequestBody ProductCreateRequest createRequest) {
+        AdminListItemProductResponse product = productService.create(createRequest);
+        URI location = URI.create("/api/products/"+product.id());
+        return ResponseEntity.created(location).body(product);
     }
-    @PatchMapping("/{id}")
-    public ResponseEntity<ProductResponse> update(@PathVariable Long id,@RequestBody ProductUpdateRequest updateRequest) {
-         ProductResponse productResponse = productService.update(id, updateRequest);
-         return ResponseEntity.ok(productResponse);
+    @PutMapping("/{productId}")
+    public ResponseEntity<AdminListItemProductResponse> update(@PathVariable Long productId, @RequestBody ProductUpdateRequest updateRequest) {
+         AdminListItemProductResponse product = productService.update(productId, updateRequest);
+         return ResponseEntity.ok(product);
     }
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductResponse> findById(@PathVariable Long id) {
-        ProductResponse productResponse = productService.findById(id);
-        return ResponseEntity.ok(productResponse);
+    @GetMapping("/{productId}")
+    public ResponseEntity<AdminListItemProductResponse> findById(@PathVariable Long productId) {
+        AdminListItemProductResponse product = productService.getById(productId);
+        return ResponseEntity.ok(product);
     }
-    @GetMapping("/category/{id}")
-    public ResponseEntity<Slice<ProductResponse>> findByCategoryId(@PathVariable Long id, Pageable pageable) {
-        Slice<ProductResponse> productResponse = productService.findByCategoryId(id, pageable);
-        return ResponseEntity.ok(productResponse);
-    }
-    @GetMapping("/name/{name}")
-    public ResponseEntity<ProductResponse> findByName(@PathVariable String name) {
-        ProductResponse productResponse = productService.findByName(name);
-        return ResponseEntity.ok(productResponse);
-    }
-    @GetMapping("/slug/{slug}")
-    public ResponseEntity<ProductResponse> findBySlug(@PathVariable String slug) {
-        ProductResponse productResponse = productService.findBySlug(slug);
-        return ResponseEntity.ok(productResponse);
-    }
+//    @GetMapping("/name/{name}")
+//    public ResponseEntity<AdminListItemProductResponse> findByName(@PathVariable String name) {
+//        AdminListItemProductResponse product = productService.getByName(name);
+//        return ResponseEntity.ok(product);
+//    }
+
     @GetMapping
-    public ResponseEntity<Slice<ProductResponse>> findByStatus(@RequestParam(required = false) ProductStatus status, Pageable pageable) {
-        Slice<ProductResponse> page = productService.findByStatus(status, pageable);
-        return ResponseEntity.ok(page);
-    }
-    @GetMapping("/brand-id/{id}")
-    public ResponseEntity<Slice<ProductResponse>> findByBrandId(@PathVariable Long id, Pageable pageable) {
-        Slice<ProductResponse> page = productService.findByBrandId(id, pageable);
-        return ResponseEntity.ok(page);
-    }
-    @GetMapping("/filter")
-    public ResponseEntity<Slice<ProductResponse>> findByFilter(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) ProductStatus status,
-            @RequestParam(required = false) Long brandId,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice,
+    public ResponseEntity<Slice<AdminListItemProductResponse>> search(
+            @ModelAttribute ProductSearchCondition condition,
             Pageable pageable) {
-        Slice<ProductResponse> page = productService.findByFilter(keyword, status, brandId, categoryId, minPrice, maxPrice, pageable);
-        return ResponseEntity.ok(page);
+        Slice<AdminListItemProductResponse> products = productService.searchForAdmin(condition, pageable);
+        return ResponseEntity.ok(products);
     }
     @PatchMapping("/restore")
-    public ResponseEntity<Integer> restoreById(@RequestBody IdListRequest ids) {
+    public ResponseEntity<Integer> restore(@RequestBody IdListRequest ids) {
         Integer rows = productService.restoreById(ids);
         return ResponseEntity.ok(rows);
     }
     @PatchMapping("/delete")
-    public ResponseEntity<Integer> deleteById(@RequestBody IdListRequest ids) {
+    public ResponseEntity<Integer> sortDelete(@RequestBody IdListRequest ids) {
         Integer rows = productService.deleteById(ids);
         return ResponseEntity.ok(rows);
     }
+    @PostMapping("/{productId}/colors")
+    public ResponseEntity<AdminColorResponse> addColor(
+            @PathVariable Long productId,
+            @RequestBody @Valid ProductColorCreateRequest request
+    ) {
+        AdminColorResponse color =  productColorService.addColor(productId, request);
+        URI location = URI.create("/api/variants/"+color.id());
+        return ResponseEntity.created(location).body(color);
+    }
+    @GetMapping("/{productId}/colors")
+    public ResponseEntity<List<AdminColorResponse>> getVariants(
+            @PathVariable Long productId
+    ) {
+        List<AdminColorResponse> colors =  productColorService.getColorByProductId(productId);
+        return ResponseEntity.ok(colors);
+    }
+
+
 }

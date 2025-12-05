@@ -1,6 +1,6 @@
 package hoang.shop.categories.dto.request;
 
-import hoang.shop.common.enums.status.TagStatus;
+import hoang.shop.common.enums.TagStatus;
 
 public record TagUpdateRequest(
         String name,

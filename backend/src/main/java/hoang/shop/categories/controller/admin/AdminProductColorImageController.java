@@ -1,97 +1,58 @@
 package hoang.shop.categories.controller.admin;
 
 
-import hoang.shop.categories.dto.request.IdListRequest;
-import jakarta.validation.Valid;
+import hoang.shop.categories.dto.request.ProductColorImageCreateRequest;
+import hoang.shop.categories.dto.response.AdminImageResponse;
+import hoang.shop.categories.service.ProductColorImageService;
+import hoang.shop.common.IdListRequest;
+import hoang.shop.categories.dto.request.ProductColorImageUpdateRequest;
+import hoang.shop.common.enums.ImageStatus;
 import lombok.RequiredArgsConstructor;
-import hoang.shop.categories.dto.request.ProductImageCreateRequest;
-import hoang.shop.categories.dto.request.ProductImageUpdateRequest;
-import hoang.shop.categories.dto.response.ProductImageResponse;
-import hoang.shop.categories.service.ProductImageService;
-import hoang.shop.common.enums.status.ProductImageStatus;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URI;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @RestController
-@RequestMapping("/api/admin/products/{productId}/images")
+@RequestMapping("/api/admin/images")
 @RequiredArgsConstructor
-public class AdminProductImageController {
-    private final ProductImageService imageService;
-
-    @PostMapping
-    public ResponseEntity<Map<String, Object>> createImages(
-            @PathVariable Long productId,
-            @RequestBody @Valid List<ProductImageCreateRequest> requestList) {
-
-        List<ProductImageResponse> items = imageService.createImages(productId, requestList);
-
-        List<Long> createdIds = items.stream()
-                .map(ProductImageResponse::id)
-                .toList();
-
-        List<String> createdUris = createdIds.stream()
-                .map(id -> ServletUriComponentsBuilder.fromCurrentRequest()
-                        .path("/{id}")
-                        .buildAndExpand(id)
-                        .toUriString())
-                .toList();
-
-        URI location = createdIds.isEmpty()
-                ? ServletUriComponentsBuilder.fromCurrentRequest().build().toUri()
-                : ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(createdIds.get(0))
-                .toUri();
-
-        Map<String, Object> body = Map.of(
-                "createdCount", createdIds.size(),
-                "createdIds", createdIds,
-                "createdUris", createdUris,
-                "items", items
-        );
-
-        return ResponseEntity.created(location).body(body);
-    }
-    @PatchMapping
-    public ResponseEntity<ProductImageResponse> updateImage(@PathVariable Long productId,@PathVariable Long imageId,@RequestBody ProductImageUpdateRequest updateRequest) {
-        ProductImageResponse productImageResponse =  imageService.updateImage(productId,imageId, updateRequest);
-        return ResponseEntity.ok(productImageResponse);
-    }
+public class AdminProductColorImageController {
+    private final ProductColorImageService imageService;
 
     @GetMapping
-    public ResponseEntity<List<ProductImageResponse>> findImages(
-            @PathVariable Long productId,
-            @RequestParam(required = false)ProductImageStatus status,
+    public List<AdminImageResponse> search(
+            @RequestParam(name = "id",required = false) Long colorId,
+            @RequestParam(required = false) ImageStatus status,
             @RequestParam(required = false) Boolean isMain,
-            Pageable pageable){
-        List<ProductImageResponse> images = imageService.findImages(productId,status,isMain,pageable);
-        return ResponseEntity.ok(images);
-    }
-    @GetMapping("/{imageId}")
-    public ResponseEntity<ProductImageResponse> getImageById(@PathVariable Long imageId) {
-        ProductImageResponse productImageResponse =  imageService.getImageById(imageId);
-        return ResponseEntity.ok(productImageResponse);
+            Pageable pageable) {
+        return imageService.search(colorId, status, isMain, pageable);
     }
 
-    @DeleteMapping("/{imageId}")
-    public ResponseEntity<Void> deleteImage(@PathVariable Long productId,@PathVariable Long imageId) {
-        imageService.deleteImage(productId, imageId);
+    @PutMapping(value = "/{imageId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public AdminImageResponse updateImage(
+            @PathVariable Long imageId,
+            @RequestPart("file") MultipartFile file,
+            @RequestPart("metadata") ProductColorImageUpdateRequest updateRequest) {
+        return imageService.updateImage(imageId, file,updateRequest);
+    }
+    @PatchMapping("/{imageId}/delete")
+    public ResponseEntity<Void> softDeleteImage(@PathVariable Long imageId) {
+        imageService.softDeleteImage(imageId);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteImages(@PathVariable Long productId,@RequestBody IdListRequest ids) {
-        imageService.deleteImages(productId, ids);
+    @PatchMapping("/{imageId}/restore")
+    public ResponseEntity<Void> restoreImage(@PathVariable Long imageId) {
+        imageService.restoreImage(imageId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{imageId}/bulk-delete")
+    public ResponseEntity<Void> deleteImages(@PathVariable Long imageId, @RequestBody IdListRequest ids) {
+        imageService.deleteImages(imageId, ids.ids());
         return ResponseEntity.noContent().build();
     }
 }

@@ -6,6 +6,7 @@ import hoang.shop.order.dto.request.OrderUpdateRequest;
 import hoang.shop.order.dto.response.OrderResponse;
 import hoang.shop.order.model.Order;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", config = MapStructConfig.class)
@@ -13,5 +14,7 @@ import org.mapstruct.MappingTarget;
 public interface OrderMapper {
     Order toEntity(OrderCreateRequest request);
     void merger(@MappingTarget Order entity, OrderUpdateRequest request);
+
+    @Mapping(target = "userId",source = "user.id")
     OrderResponse toResponse(Order entity);
 }

@@ -43,8 +43,18 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Cart> carts = new ArrayList<>();
-
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<PasswordResetToken> tokens = new ArrayList<>();
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<UserSession> sessions = new ArrayList<>();
     //field
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(name = "first_name",nullable = false,length = 100)
     private String firstName;
 
@@ -52,7 +62,7 @@ public class User extends BaseEntity {
     private String lastName;
 
 
-    @Column(name = "full_name",insertable = false,updatable = false,columnDefinition = "GENERATED ALWAYS AS (CONCAT(first_name, ' ', last_name)) STORED")
+    @Column(name = "full_name",insertable = false,updatable = false,columnDefinition = "CONCAT(first_name, ' ', last_name)")
     private String fullName;
 
     @Enumerated(EnumType.STRING)
@@ -76,11 +86,9 @@ public class User extends BaseEntity {
     @JsonIgnore
     private String avatarUrl;
 
-    @Column(name = "email_verified")
-    private boolean emailVerified;
-
     @Column(name = "last_login")
     private Instant lastLogin;
     @Column(nullable = false)
     private boolean deleted = false;
+
 }

@@ -1,4 +1,7 @@
 package hoang.shop.categories.dto.response;
 
-public class ProductReviewStatsResponse {
+public record ProductReviewStatsResponse (
+        Double averageRating,
+        Long reviewCount
+){
 }

@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import hoang.shop.common.baseEntity.BaseEntity;
-import hoang.shop.common.enums.status.TagStatus;
+import hoang.shop.common.enums.TagStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,13 +31,21 @@ public class Tag extends BaseEntity {
     
 
     //Field
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+
     @Column(nullable = false)
     private String name ;
+
     @Column(nullable = false)
     private String slug;
+
     @Column(length = 500)
     private String description;
+
     @Enumerated(EnumType.STRING)
     private TagStatus status = TagStatus.ACTIVE;
+
 
 }

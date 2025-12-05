@@ -5,13 +5,13 @@ import java.math.BigDecimal;
 public record OrderItemResponse (
         Long id,
         Long productVariantId,
-        String productName,
-        String productVariantName,
+        String sizeName,
+        String colorName,
+        String colorHex,
         String sku,
         Integer quantity,
         BigDecimal unitPriceBefore,
         BigDecimal unitPriceAtOrder,
-        BigDecimal lineDiscount,
         BigDecimal lineTotal,
         String imageUrl
 ){

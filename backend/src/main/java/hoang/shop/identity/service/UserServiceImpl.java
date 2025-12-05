@@ -1,9 +1,9 @@
 package hoang.shop.identity.service;
 
+import hoang.shop.identity.dto.request.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import hoang.shop.common.exception.DuplicateResourceException;
 import hoang.shop.common.exception.NotFoundException;
-import hoang.shop.identity.dto.request.UserCreateRequest;
 import hoang.shop.identity.dto.request.UserUpdateRequest;
 import hoang.shop.identity.dto.response.UserResponse;
 import hoang.shop.identity.mapper.UserMapper;
@@ -23,10 +23,10 @@ public class UserServiceImpl implements UserService {
 
     // create
     @Override
-    public UserResponse createUser(UserCreateRequest userCreateRequest) {
-        if (userRepository.existsByEmail(userCreateRequest.email()))
+    public UserResponse createUser(RegisterRequest registerRequest) {
+        if (userRepository.existsByEmail(registerRequest.email()))
             throw new DuplicateResourceException("{error.user.email.exists}");
-        User user = userMapper.toEntity(userCreateRequest);
+        User user = userMapper.toEntity(registerRequest);
         user = userRepository.saveAndFlush(user);
         return userMapper.toResponse(user);
     }

@@ -1,17 +1,21 @@
 package hoang.shop.categories.dto.request;
 
-import hoang.shop.common.enums.status.ProductStatus;
-
-import java.math.BigDecimal;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record ProductUpdateRequest(
+        Long brandId,
+
+        @NotNull
+        Long categoryId,
+
+        @NotBlank
         String name,
-        String description,
+
+        @NotBlank
         String slug,
-        BigDecimal price,
-        BigDecimal discountPrice,
-        Integer stockQuantity,
-        ProductStatus status
+
+        String description
 
 ) {
 }

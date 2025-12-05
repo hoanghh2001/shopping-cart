@@ -1,34 +1,25 @@
 package hoang.shop.categories.service;
 
-import hoang.shop.categories.dto.request.IdListRequest;
-import hoang.shop.categories.dto.request.ProductCreateRequest;
-import hoang.shop.categories.dto.request.ProductUpdateRequest;
-import hoang.shop.categories.dto.response.ProductResponse;
-import hoang.shop.common.enums.status.ProductStatus;
+import hoang.shop.categories.dto.request.*;
+import hoang.shop.categories.dto.response.AdminListItemProductResponse;
+import hoang.shop.categories.dto.response.ProductDetailResponse;
+import hoang.shop.categories.dto.response.ProductListItemResponse;
+import hoang.shop.common.IdListRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import java.math.BigDecimal;
 
 public interface ProductService {
-    ProductResponse create(ProductCreateRequest createRequest);
-    ProductResponse update(Long productId, ProductUpdateRequest updateRequest);
-    ProductResponse findById(Long productId);
-    ProductResponse findByName(String name);
-    ProductResponse findBySlug(String slug);
-    Slice<ProductResponse> findByFilter(
-            String keyword,
-            ProductStatus status,
-            Long tagId,
-            Long brandId,
-            Long categoryId,
-            BigDecimal minPrice,
-            BigDecimal maxPrice,
+    AdminListItemProductResponse create(ProductCreateRequest createRequest);
+    AdminListItemProductResponse update(Long productId, ProductUpdateRequest updateRequest);
+    AdminListItemProductResponse getById(Long productId);
+    AdminListItemProductResponse getByName(String name);
+    Page<AdminListItemProductResponse> searchForAdmin(
+            ProductSearchCondition condition,
             Pageable pageable);
     int deleteById(IdListRequest ids);
     int restoreById(IdListRequest ids);
 
-    <ProductResponse> findActiveProducts();
-    ProductResponse findActiveBySlug();
-    ProductResponse findActiveById();
+    ProductDetailResponse getActiveBySlug(String slug);
+    Page<ProductListItemResponse> search(PublicProductSearchCondition condition, Pageable pageable);
 
 }

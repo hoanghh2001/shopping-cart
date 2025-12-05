@@ -10,7 +10,7 @@ public record OrderItemCreateRequest(
         String sku,
 
         @NotNull(message = "{error.order-item.quantity.not-null}")
-        @Min(value = 1,message = "{error.order-item.quantity.min}")
+        @Min(value = 1,message = "{error.order-item.quantity.minPrice}")
         Integer quantity
 
 ) {

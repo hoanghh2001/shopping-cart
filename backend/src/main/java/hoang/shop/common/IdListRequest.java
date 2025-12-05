@@ -1,4 +1,4 @@
-package hoang.shop.categories.dto.request;
+package hoang.shop.common;
 
 import java.util.List;
 

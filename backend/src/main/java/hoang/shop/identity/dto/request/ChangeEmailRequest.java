@@ -1,4 +1,6 @@
 package hoang.shop.identity.dto.request;
 
-public class ChangeEmailRequest {
-}
+public record ChangeEmailRequest (
+        String newEmail,
+        String password
+){ }

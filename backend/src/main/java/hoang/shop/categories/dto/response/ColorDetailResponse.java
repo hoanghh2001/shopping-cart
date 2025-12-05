@@ -2,12 +2,12 @@ package hoang.shop.categories.dto.response;
 
 import java.util.List;
 
-public record ProductColorDetailResponse (
+public record ColorDetailResponse(
         Long id,
         String name,
         String hex,
         boolean isDefault,
-        List<ProductColorImageResponse> images,
-        List<ProductVariantResponse> variants
+        List<ImageResponse> images,
+        List<VariantResponse> variants
 ){
 }

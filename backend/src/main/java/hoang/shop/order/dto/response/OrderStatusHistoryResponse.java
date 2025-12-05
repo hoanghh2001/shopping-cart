@@ -1,7 +1,7 @@
 package hoang.shop.order.dto.response;
 
-import hoang.shop.common.enums.status.ChangedByType;
-import hoang.shop.common.enums.status.OrderStatus;
+import hoang.shop.common.enums.ChangedByType;
+import hoang.shop.common.enums.OrderStatus;
 
 import java.time.Instant;
 

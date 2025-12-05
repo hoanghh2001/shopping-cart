@@ -1,5 +1,6 @@
 package hoang.shop.identity.mapper;
 
+import hoang.shop.config.MapStructConfig;
 import hoang.shop.identity.dto.request.RoleCreateRequest;
 import hoang.shop.identity.dto.request.RoleUpdateRequest;
 import hoang.shop.identity.dto.response.RoleResponse;
@@ -9,7 +10,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",config = MapStructConfig.class)
 public interface RoleMapper {
     Role toEntity(RoleCreateRequest dto);
 

@@ -1,17 +1,17 @@
 package hoang.shop.order.dto.request;
 
-import hoang.shop.common.enums.status.OrderStatus;
-import hoang.shop.common.enums.status.PaymentStatus;
+import hoang.shop.common.enums.OrderStatus;
+import hoang.shop.common.enums.PaymentStatus;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.Instant;
 
 public record OrderSearchCondition(
         Long userId,
         OrderStatus orderStatus,
         PaymentStatus paymentStatus,
-        LocalDate fromDate,
-        LocalDate toDate,
+        Instant fromDate,
+        Instant toDate,
         BigDecimal minTotal,
         BigDecimal maxTotal,
         String keyword,

@@ -1,4 +1,9 @@
 package hoang.shop.identity.dto.request;
 
-public record VerifyPasswordRequest() {
+import jakarta.validation.constraints.NotBlank;
+
+public record VerifyPasswordRequest(
+        @NotBlank
+        String password
+) {
 }

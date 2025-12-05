@@ -1,4 +1,10 @@
 package hoang.shop.categories.dto.request;
 
-public class ProductReviewCreateRequest {
+import java.util.List;
+
+public record ProductReviewCreateRequest(
+        int rating,
+        String title,
+        String content
+) {
 }

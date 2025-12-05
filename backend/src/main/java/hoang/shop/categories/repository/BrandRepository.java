@@ -1,7 +1,7 @@
 package hoang.shop.categories.repository;
 
 import hoang.shop.categories.model.Brand;
-import hoang.shop.common.enums.status.BrandStatus;
+import hoang.shop.common.enums.BrandStatus;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,4 +32,10 @@ public interface BrandRepository extends JpaRepository<Brand,Long> {
     boolean existsBySlug(String slug);
     boolean existsByNameAndIdNot(String name,Long id);
     boolean existsBySlugAndIdNot(String slug, Long id);
+
+    Slice<Brand> findAllByStatus(BrandStatus brandStatus, Pageable pageable);
+
+    Optional<Brand> findBySlugAndStatus(String slug, BrandStatus brandStatus);
+
+    Optional<Brand> findByIdAndStatus(Long brandId, BrandStatus brandStatus);
 }

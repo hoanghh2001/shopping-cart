@@ -1,104 +1,109 @@
 package hoang.shop.categories.service;
 
+import com.github.slugify.Slugify;
+import hoang.shop.categories.dto.request.*;
+import hoang.shop.categories.dto.response.AdminListItemProductResponse;
+import hoang.shop.categories.dto.response.ProductDetailResponse;
+import hoang.shop.categories.dto.response.ProductListItemResponse;
+import hoang.shop.categories.model.*;
+import hoang.shop.categories.repository.*;
+import hoang.shop.categories.spec.ProductSpec;
+import hoang.shop.common.IdListRequest;
 import lombok.RequiredArgsConstructor;
-import hoang.shop.categories.dto.request.IdListRequest;
-import hoang.shop.categories.dto.request.ProductCreateRequest;
-import hoang.shop.categories.dto.request.ProductUpdateRequest;
-import hoang.shop.categories.dto.response.ProductResponse;
 import hoang.shop.categories.mapper.ProductMapper;
-import hoang.shop.categories.model.Product;
-import hoang.shop.categories.repository.ProductRepository;
-import hoang.shop.common.enums.status.ProductStatus;
+import hoang.shop.common.enums.ProductStatus;
 import hoang.shop.common.exception.BadRequestException;
 import hoang.shop.common.exception.DuplicateResourceException;
 import hoang.shop.common.exception.NotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
-    private final ProductMapper mapper;
+    private final ProductMapper productMapper;
+    private final ProductReviewStatsRepository statsRepository;
+    private final BrandRepository brandRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductTagRepository productTagRepository;
+    private final ProductColorRepository colorRepository;
+    private final ProductColorImageRepository imageRepository;
+
     @Override
-    public ProductResponse create(ProductCreateRequest request) {
+    public AdminListItemProductResponse create(ProductCreateRequest request) {
+
+
         if (productRepository.existsByName(request.name()))
             throw new DuplicateResourceException("{error.product.name.duplicate}");
-        if (productRepository.existsBySlug(request.slug()))
+        String name =request.name().trim().toLowerCase(Locale.ROOT);
+        String slug = Slugify.builder().build().slugify(request.name());
+        if (productRepository.existsBySlug(slug))
             throw new DuplicateResourceException("{error.product.slug.duplicate}");
-        Product product = mapper.toEntity(request);
-        product = productRepository.save(product);
-        return mapper.toResponse(product);
+        Product product = productMapper.toEntity(request);
+        if (request.brandId()!=null) {
+            Brand brand = brandRepository.findById(request.brandId())
+                    .orElseThrow(()-> new NotFoundException("{error.brand.id.not-found}"));
+            product.setBrand(brand);
+        }
+        if(request.categoryId()!=null){
+            Category category = categoryRepository.findById(request.categoryId())
+                    .orElseThrow(()-> new NotFoundException("{error.category.id.not-found}"));
+            product.setCategory(category);
+        }
+        product.setSlug(slug);
+        Product saved = productRepository.save(product);
+        ProductReviewStats stats = ProductReviewStats.builder().productId(saved.getId()).build();
+        statsRepository.save(stats);
+        return productMapper.toAdminListItemResponse(saved);
     }
 
     @Override
-    public ProductResponse update(Long productId, ProductUpdateRequest request) {
+    public AdminListItemProductResponse update(Long productId, ProductUpdateRequest request) {
         if (productRepository.existsByNameAndIdNot(request.name(),productId))
             throw new DuplicateResourceException("{error.product.name.duplicate}");
         if (productRepository.existsBySlugAndIdNot(request.slug(),productId))
             throw new DuplicateResourceException("{error.product.slug.duplicate}");
         Product product = productRepository.findById(productId)
-                .orElseThrow(()-> new NotFoundException("{error.product.id.notFound}"));
-        mapper.merge(request,product);
-        return mapper.toResponse(product);
+                .orElseThrow(()-> new NotFoundException("{error.product.id.not-found}"));
+        productMapper.merge(request,product);
+        return productMapper.toAdminListItemResponse(product);
     }
 
     @Override
-    public ProductResponse findById(Long id) {
+    public AdminListItemProductResponse getById(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("{error.product.id.notFound}"));
-        return mapper.toResponse(product);
+                .orElseThrow(()-> new NotFoundException("{error.product.id.not-found}"));
+        return productMapper.toAdminListItemResponse(product);
     }
 
     @Override
-    public ProductResponse findByName(String name) {
+    public AdminListItemProductResponse getByName(String name) {
         Product product = productRepository.findByName(name)
-                .orElseThrow(()-> new NotFoundException("{error.product.name.notFound}"));
-        return mapper.toResponse(product);
+                .orElseThrow(()-> new NotFoundException("{error.product.name.not-found}"));
+        return productMapper.toAdminListItemResponse(product);
     }
 
     @Override
-    public ProductResponse findBySlug(String slug) {
-        Product product = productRepository.findBySlug(slug)
-                .orElseThrow(()-> new NotFoundException("{error.product.slug.notFound}"));
-        return mapper.toResponse(product);
-    }
-
-    @Override
-    public Slice<ProductResponse> findByStatus(ProductStatus status, Pageable pageable) {
-        Slice<Product> page = productRepository.findByFilter(null,status,null,null,null,null,pageable);
-        return page.map(mapper::toResponse);
-    }
-
-    @Override
-    public Slice<ProductResponse> findByBrandId(Long brandId, Pageable pageable) {
-        Slice<Product> page = productRepository.findByBrandId(brandId,pageable);
-        return page.map(mapper::toResponse);
-    }
-
-    @Override
-    public Slice<ProductResponse> findByCategoryId(Long categoryId, Pageable pageable) {
-        Slice<Product> page = productRepository.findByCategoryId(categoryId,pageable);
-        return page.map(mapper::toResponse);
-    }
-
-    @Override
-    public Slice<ProductResponse> findByFilter(String keyword,ProductStatus status, Long brandId, Long categoryId, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable) {
-        Slice<Product> page = productRepository.findByFilter(keyword,status,brandId,categoryId,minPrice,maxPrice,pageable);
-        return page.map(mapper::toResponse);
+    public Page<AdminListItemProductResponse> searchForAdmin(ProductSearchCondition condition, Pageable pageable) {
+        Specification<Product> spec = ProductSpec.build(condition);
+        Page<Product> page = productRepository.findAll(spec,pageable);
+        return page.map(productMapper::toAdminListItemResponse);
     }
 
     @Override
     public int deleteById(IdListRequest ids) {
         List<Product> productList= productRepository.findAllById(ids.ids());
         if (productList.size()!=ids.ids().size())
-            throw new NotFoundException("{error.product.id.notFound}");
+            throw new NotFoundException("{error.product.id.not-found}");
         boolean isInvalid = productList.stream()
                 .anyMatch(p -> p.getStatus()!=ProductStatus.ACTIVE);
         if (isInvalid)
@@ -110,7 +115,7 @@ public class ProductServiceImpl implements ProductService {
     public int restoreById(IdListRequest ids) {
         List<Product> productList= productRepository.findAllById(ids.ids());
         if (productList.size()!=ids.ids().size())
-            throw new NotFoundException("{error.product.id.notFound}");
+            throw new NotFoundException("{error.product.id.not-found}");
         boolean isInvalid = productList.stream()
                 .anyMatch(p -> p.getStatus()!=ProductStatus.DELETED);
         if (isInvalid)
@@ -118,7 +123,60 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.updateStatusById(ids.ids(),ProductStatus.ACTIVE);
     }
 
+    @Override
+    public ProductDetailResponse getActiveBySlug(String slug) {
+        Product product = productRepository.findBySlugAndStatus(slug,ProductStatus.ACTIVE)
+                .orElseThrow(()-> new NotFoundException("{error.product.slug.not-found}"));
 
+        ProductReviewStats stats = statsRepository.findByProductId(product.getId())
+                .orElseThrow(()-> new NotFoundException("{error.product-review-stats.product-id.not-found}"));
+
+        return productMapper.toDetailResponse(product,stats);
+    }
+
+
+    @Override
+    public Page<ProductListItemResponse> search(PublicProductSearchCondition condition, Pageable pageable) {
+        Specification<Product> spec = ProductSpec.buildPublic(condition);
+
+        return productRepository.findAll(spec, pageable)
+                .map(product -> {
+                    ProductReviewStats stats = statsRepository.findByProductId(product.getId())
+                            .orElseThrow(()-> new NotFoundException("{error.product-review-stats.product-id.not-found}"));
+                    ProductListItemResponse base = productMapper.toListItemResponse(product,stats);
+
+                    ProductTag productTag = productTagRepository
+                            .findFirstByProduct_IdAndMainTrue(product.getId())
+                            .orElse(null);
+
+                    Tag mainTag = Optional.ofNullable(productTag).map(ProductTag::getTag).orElse(null);
+                    String mainTagName = (mainTag != null)? mainTag.getName():null;
+                    String mainTagSlug = (mainTag!= null) ? mainTag.getSlug() : null;
+
+                    ProductColor color = colorRepository.findFirstByProduct_IdAndMainTrue(product.getId())
+                            .orElse(null);
+                    Long colorId = color !=null ? color.getId() : null;
+                    boolean productInStock = product.getColors().stream()
+                            .flatMap(c -> c.getVariants().stream())
+                            .anyMatch(v -> v.getStock() > 0);
+                    return new ProductListItemResponse(
+                            colorId,
+                            base.name(),
+                            base.slug(),
+                            base.brandName(),
+                            base.brandSlug(),
+                            mainTagName,
+                            mainTagSlug,
+                            base.minPrice(),
+                            base.maxPrice(),
+                            base.averageRating(),
+                            base.reviewCount(),
+                            base.imageUrl(),
+                            productInStock
+
+                    );
+                });
+    }
 
 
 }

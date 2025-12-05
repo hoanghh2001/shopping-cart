@@ -1,15 +1,14 @@
 package hoang.shop.cart.dto.response;
 
-import hoang.shop.common.enums.status.CartStatus;
+import hoang.shop.common.enums.CartStatus;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public record CartResponse(
         Long id,
-        Long userId,
-        String sessionId,
-        List<CartItemResponse> cartItems,
+        List<ItemResponse> cartItems,
         Integer totalQuantity,
-        CartStatus status
+        BigDecimal totalAmount
 ) {
 }

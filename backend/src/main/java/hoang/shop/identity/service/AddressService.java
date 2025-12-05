@@ -6,22 +6,36 @@ import hoang.shop.identity.dto.response.AddressResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface AddressService {
-    //create
-    AddressResponse createAddress(Long id ,AddressCreateRequest addressCreateRequest);
-    //read
+    //Admin
     AddressResponse getById(Long addressId);
 
-    //update
-    AddressResponse updateAddress(Long addressId,AddressUpdateRequest addressUpdateRequest);
-    boolean restoreById(Long addressId);
-    //delete
-    boolean softDeleteById(Long addressId);
-    //list
-    Page<AddressResponse> listByUser(Long userId, Pageable pageable);
-    //default address
-    boolean setDefault(Long userId,Long address);
-    AddressResponse getDefault(Long userId);
+    List<AddressResponse> listByUser(Long userId);
 
+    boolean softDelete(Long addressId);
+
+    boolean restore(Long addressId);
+
+    boolean hardDelete(Long addressId);
+
+
+    //user
+    AddressResponse create(Long userId, AddressCreateRequest request);
+
+    AddressResponse getById(Long userId, Long addressId);
+
+    AddressResponse update(Long userId, Long addressId, AddressUpdateRequest request);
+
+    boolean softDelete(Long userId, Long addressId);
+
+    boolean restore(Long userId, Long addressId);
+
+    Page<AddressResponse> list(Long userId, Pageable pageable);
+
+    boolean setDefault(Long userId, Long addressId);
+
+    AddressResponse getDefault(Long userId);
 
 }

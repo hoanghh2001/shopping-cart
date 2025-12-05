@@ -1,12 +1,10 @@
 package hoang.shop.categories.dto.response;
 
-import hoang.shop.common.enums.BrandStatus;
 import hoang.shop.common.enums.ProductStatus;
 
 import java.time.Instant;
-import java.util.List;
 
-public record AdminProductResponse(
+public record AdminListItemProductResponse(
         Long id,
         String name,
         String slug,

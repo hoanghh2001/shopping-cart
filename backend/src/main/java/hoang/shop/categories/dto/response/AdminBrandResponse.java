@@ -4,15 +4,19 @@ import hoang.shop.common.enums.BrandStatus;
 
 import java.time.Instant;
 
-public record AdminBrandDetailResponse(
+public record AdminBrandResponse(
         Long id,
         String name,
         String slug,
         String logoUrl,
         BrandStatus status,
+
         Instant createdAt,
+        Long createdBy,
         Instant updatedAt,
-        Instant deletedAt
+        Long updatedBy,
+        Instant deletedAt,
+        Long deletedBy
 
 ) {
 }

@@ -15,7 +15,7 @@ public class I18nConfig {
         ms.setBasenames("classpath:messages");
         ms.setDefaultEncoding("UTF-8");
         ms.setFallbackToSystemLocale(false);
-        ms.setUseCodeAsDefaultMessage(true); // thiếu key -> in chính key
+        ms.setUseCodeAsDefaultMessage(true);
         return ms;
     }
 

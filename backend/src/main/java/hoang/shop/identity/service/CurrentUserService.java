@@ -1,4 +1,9 @@
 package hoang.shop.identity.service;
 
-public class CurrentUserService {
+import hoang.shop.identity.model.User;
+
+public interface CurrentUserService {
+    Long getCurrentUserId();
+
+    User getCurrentUser();
 }

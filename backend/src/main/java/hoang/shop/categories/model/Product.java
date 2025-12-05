@@ -23,26 +23,28 @@ import java.util.List;
         indexes = {
                 @Index(name = "ix_products_brand_id", columnList = "brand_id"),
                 @Index(name = "ix_products_category_id", columnList = "category_id"),
-                @Index(name = "ix_products_status", columnList = "status")
+                @Index(name = "ix_products_status", columnList = "status"),
+                @Index(name = "ix_products_slug",columnList = "slug",unique = true),
+                @Index(name = "idx_products_created_at",columnList = "created_at")
         }
 )
 public class Product extends BaseEntity {
     //constrain
 
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<ProductReview> reviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "product",fetch = FetchType.LAZY)
     private List<ProductTag> tags = new ArrayList<>();
 
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<ProductColor> productColors = new ArrayList<>();
+    private List<ProductColor> colors = new ArrayList<>();
 
-    @ManyToOne(optional = false,fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id",foreignKey = @ForeignKey(name = "fk_products_brand"))
     private Brand brand;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false,fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id",
             foreignKey = @ForeignKey(name = "fk_products_category"))
     private Category category;
@@ -57,10 +59,9 @@ public class Product extends BaseEntity {
     private String description;
     @Column(nullable = false)
     private String slug;
-
-    @Column(name = "min_price",nullable = false)
+    @Column(name = "min_price")
     private BigDecimal minPrice;
-    @Column(name = "max_price",nullable = false)
+    @Column(name = "max_price")
     private BigDecimal maxPrice;
     @Enumerated(EnumType.STRING)
     @Column( length = 20,nullable = false)

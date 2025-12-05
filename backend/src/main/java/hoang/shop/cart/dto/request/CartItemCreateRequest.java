@@ -6,9 +6,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record CartItemCreateRequest(
         @NotNull(message = "{error.cart-item.product-variant-id.required}")
-        Long productVariantId,
-        @NotNull(message = "{error.cart-item.quantity.required}")
-        @Min(value = 1, message = "{error.cart-item.quantity.min}")
+        Long variantId,
+        @Min(value = 1, message = "{error.cart-item.quantity.minPrice}")
         Integer quantity
 ) {
 

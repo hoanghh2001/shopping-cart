@@ -5,14 +5,13 @@ import hoang.shop.common.enums.ProductColorStatus;
 import java.math.BigDecimal;
 import java.util.List;
 
-public record ProductColorResponse(
+public record ColorResponse(
         Long id,
         String name,
         String hex,
-        BigDecimal originalPrice,
-        BigDecimal discountPrice,
-        List<ProductColorImageResponse> images,
-        List<ProductVariantResponse> variants,
+
+        List<ImageResponse> images,
+        List<VariantResponse> variants,
         ProductColorStatus status,
         boolean isDefault
 ) {

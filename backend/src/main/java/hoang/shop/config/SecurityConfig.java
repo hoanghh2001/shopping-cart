@@ -1,5 +1,6 @@
-package hoang.shop.identity.security;
+package hoang.shop.config;
 
+import hoang.shop.identity.security.JwtAuthenticationFilter;
 import hoang.shop.identity.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +37,8 @@ public class SecurityConfig {
                                 "/api/auth/register",
                                 "/api/auth/login",
                                 "/api/auth/forgot-password",
-                                "/api/auth/reset-password"
+                                "/api/auth/reset-password",
+                                "/uploads/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/products/**",
@@ -45,6 +47,12 @@ public class SecurityConfig {
                                 "/api/products/**",
                                 "/api/tags/**",
                                 "/api/variants/**"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/docs/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/api-docs/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/v3/api-docs/**",
