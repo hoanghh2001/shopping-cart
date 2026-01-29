@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,5 +40,16 @@ public interface ProductColorImageRepository extends JpaRepository<ProductColorI
             @Param("color") ColorFamily color
     );
 
+    @Query("""
+            select img
+            from ProductColorImage img
+            where img.main = true
+            and img.color.product.id in :productIds
+            and img.color.colorFamily = :family
+            """)
+    List<ProductColorImage> findMainImagesByProductIdsAndColorFamily(
+            @Param("productIds") List<Long> productIds,
+            @Param("family") ColorFamily family
+    );
 }
 

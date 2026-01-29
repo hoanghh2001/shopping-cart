@@ -3,6 +3,7 @@ package hoang.shop.categories.service;
 import com.github.slugify.Slugify;
 import hoang.shop.categories.dto.request.*;
 import hoang.shop.categories.dto.response.AdminListItemProductResponse;
+import hoang.shop.categories.dto.response.PriceTuple;
 import hoang.shop.categories.dto.response.ProductDetailResponse;
 import hoang.shop.categories.dto.response.ProductListItemResponse;
 import hoang.shop.categories.model.*;
@@ -26,9 +27,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -42,6 +43,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductTagRepository productTagRepository;
     private final ProductColorRepository colorRepository;
     private final ProductColorImageRepository imageRepository;
+    private final ProductVariantRepository variantRepository;
 
     @Override
     public AdminListItemProductResponse create(ProductCreateRequest request) {
@@ -138,63 +140,132 @@ public class ProductServiceImpl implements ProductService {
 
         return productMapper.toDetailResponse(product, stats);
     }
+
     @Override
+    @Transactional(readOnly = true)
     public Page<ProductListItemResponse> search(PublicProductSearchCondition condition, Pageable pageable) {
+
         Specification<Product> spec = ProductSpec.buildPublic(condition);
 
-        return productRepository.findAll(spec, pageable)
-                .map(product -> {
-                    ProductReviewStats stats = statsRepository.findByProductId(product.getId())
-                            .orElse(null);
-                    ProductListItemResponse base = productMapper.toListItemResponse(product, stats);
+        // 1) Parse filter color (an toàn, tránh valueOf nổ)
+        ColorFamily filterColor = null;
+        if (condition != null && condition.colors() != null && !condition.colors().isEmpty()) {
+            try {
+                filterColor = ColorFamily.valueOf(condition.colors().getFirst().toUpperCase());
+            } catch (IllegalArgumentException ex) {
+                filterColor = null;
+            }
+        }
 
-                    ProductTag productTag = productTagRepository
-                            .findFirstByProduct_IdAndMainTrue(product.getId())
-                            .orElse(null);
+        // 2) Page products
+        Page<Product> page = productRepository.findAll(spec, pageable);
+        List<Long> productIds = page.getContent().stream()
+                .map(Product::getId)
+                .toList();
 
-                    Tag mainTag = Optional.ofNullable(productTag).map(ProductTag::getTag).orElse(null);
-                    String mainTagName = (mainTag != null) ? mainTag.getName() : null;
-                    String mainTagSlug = (mainTag != null) ? mainTag.getSlug() : null;
+        if (productIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
 
-                    ProductColor color = colorRepository.findFirstByProduct_IdAndMainTrue(product.getId())
-                            .orElse(null);
-                    Long colorId = color != null ? color.getId() : null;
-                    boolean productInStock = product.getColors().stream()
-                            .flatMap(c -> c.getVariants().stream())
-                            .anyMatch(v -> v.getStock() > 0);
-                    String imgUrl = base.imageUrl();
-                    BigDecimal regularPrice = base.regularPrice();
-                    BigDecimal salePrice = base.salePrice();
-                    if (condition != null && condition.colors() != null && !condition.colors().isEmpty()) {
-                        String colorName = condition.colors().getFirst();
-                        ProductColorImage image = imageRepository
-                                .findMainImageByProductAndColor(product.getId(), ColorFamily.valueOf(colorName.toUpperCase()))
-                                .orElse(null);
-                        imgUrl = image != null ? image.getImageUrl() : base.imageUrl();
-                        colorId = image != null ? image.getColor().getId() : colorId;
-                        regularPrice = image != null ? image.getColor().getVariants().getFirst().getRegularPrice() : regularPrice;
-                        salePrice = image != null ? image.getColor().getVariants().getFirst().getSalePrice() : salePrice;
+        // 3) Bulk maps/sets
+        Map<Long, ProductReviewStats> statsMap =
+                statsRepository.findByProductIdIn(productIds).stream()
+                        .collect(Collectors.toMap(
+                                ProductReviewStats::getProductId,
+                                Function.identity(),
+                                (a, b) -> a
+                        ));
+
+        Map<Long, ProductColor> mainColorMap =
+                colorRepository.findMainColorsByProductIds(productIds).stream()
+                        .collect(Collectors.toMap(
+                                pc -> pc.getProduct().getId(),
+                                Function.identity(),
+                                (a, b) -> a
+                        ));
+
+        Set<Long> inStockProductIds =
+                new HashSet<>(variantRepository.findInStockProductIds(productIds));
+
+        // 4) Build imageMap/priceMap bằng biến tạm rồi "chốt final"
+        Map<Long, ProductColorImage> tmpImageMap = Map.of();
+        Map<Long, PriceTuple> tmpPriceMap = Map.of();
+
+        if (filterColor != null) {
+            tmpImageMap = imageRepository
+                    .findMainImagesByProductIdsAndColorFamily(productIds, filterColor)
+                    .stream()
+                    .collect(Collectors.toMap(
+                            img -> img.getColor().getProduct().getId(),
+                            Function.identity(),
+                            (a, b) -> a
+                    ));
+
+            List<Long> colorIds = tmpImageMap.values().stream()
+                    .map(img -> img.getColor().getId())
+                    .distinct()
+                    .toList();
+
+            if (!colorIds.isEmpty()) {
+                tmpPriceMap = variantRepository.findMinPricesByColorIds(colorIds).stream()
+                        .collect(Collectors.toMap(
+                                PriceTuple::colorId,
+                                Function.identity(),
+                                (a, b) -> a
+                        ));
+            }
+        }
+
+        final ColorFamily finalFilterColor = filterColor;
+        final Map<Long, ProductColorImage> imageMap = tmpImageMap;
+        final Map<Long, PriceTuple> priceMap = tmpPriceMap;
+
+        // 5) Map DTO (không query)
+        return page.map(product -> {
+            ProductReviewStats stats = statsMap.get(product.getId());
+            ProductListItemResponse base = productMapper.toListItemResponse(product, stats);
+
+            ProductColor mainColor = mainColorMap.get(product.getId());
+            Long colorId = (mainColor != null) ? mainColor.getId() : null;
+
+            boolean inStock = inStockProductIds.contains(product.getId());
+
+            String imgUrl = base.imageUrl();
+            BigDecimal regularPrice = base.regularPrice();
+            BigDecimal salePrice = base.salePrice();
+
+            if (finalFilterColor != null) {
+                ProductColorImage image = imageMap.get(product.getId());
+                if (image != null) {
+                    imgUrl = image.getImageUrl();
+                    colorId = image.getColor().getId();
+
+                    PriceTuple price = priceMap.get(colorId);
+                    if (price != null) {
+                        regularPrice = price.regularPrice();
+                        salePrice = price.salePrice();
                     }
-                    return new ProductListItemResponse(
-                            product.getId(),
-                            colorId,
-                            base.name(),
-                            base.slug(),
-                            base.brandName(),
-                            base.brandSlug(),
-                            mainTagName,
-                            mainTagSlug,
-                            regularPrice,
-                            salePrice,
-                            base.averageRating(),
-                            base.reviewCount(),
-                            imgUrl,
-                            base.createdAt(),
-                            productInStock
+                }
+            }
 
-                    );
-                });
+            return new ProductListItemResponse(
+                    product.getId(),
+                    colorId,
+                    base.name(),
+                    base.slug(),
+                    base.brandName(),
+                    base.brandSlug(),
+                    regularPrice,
+                    salePrice,
+                    base.averageRating(),
+                    base.reviewCount(),
+                    imgUrl,
+                    base.createdAt(),
+                    inStock
+            );
+        });
     }
+
 
     @Override
     public Slice<ProductListItemResponse> getNewProducts(Pageable pageable) {
@@ -214,13 +285,6 @@ public class ProductServiceImpl implements ProductService {
                             .orElse(null);
                     ProductListItemResponse base = productMapper.toListItemResponse(product, stats);
 
-                    ProductTag productTag = productTagRepository
-                            .findFirstByProduct_IdAndMainTrue(product.getId())
-                            .orElse(null);
-
-                    Tag mainTag = Optional.ofNullable(productTag).map(ProductTag::getTag).orElse(null);
-                    String mainTagName = (mainTag != null) ? mainTag.getName() : null;
-                    String mainTagSlug = (mainTag != null) ? mainTag.getSlug() : null;
 
                     ProductColor color = colorRepository.findFirstByProduct_IdAndMainTrue(product.getId())
                             .orElse(null);
@@ -238,8 +302,6 @@ public class ProductServiceImpl implements ProductService {
                             base.slug(),
                             base.brandName(),
                             base.brandSlug(),
-                            mainTagName,
-                            mainTagSlug,
                             regularPrice,
                             salePrice,
                             base.averageRating(),

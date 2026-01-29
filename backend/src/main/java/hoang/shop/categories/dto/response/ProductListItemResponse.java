@@ -12,8 +12,6 @@ public record ProductListItemResponse(
 
         String brandName,
         String brandSlug,
-        String tagName,
-        String tagSlug,
 
         BigDecimal regularPrice,
         BigDecimal salePrice,
