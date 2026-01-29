@@ -201,11 +201,7 @@ function renderShippingSummary(data) {
     `
   );
 }
-function yen(n) {
-  const v = Number(n);
-  if (!v) return `無料`;
-  return `¥${v.toLocaleString()}`;
-}
+
 async function loadAndRenderShippingEstimate(addressId, element) {
   try {
     const estimate = await fetchShippingEstimate(addressId);

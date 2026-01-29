@@ -10,6 +10,7 @@ import hoang.shop.categories.repository.*;
 import hoang.shop.categories.spec.ProductSpec;
 import hoang.shop.common.IdListRequest;
 import hoang.shop.common.enums.ColorFamily;
+import org.springframework.cache.annotation.Cacheable;
 import lombok.RequiredArgsConstructor;
 import hoang.shop.categories.mapper.ProductMapper;
 import hoang.shop.common.enums.status.ProductStatus;
@@ -137,8 +138,6 @@ public class ProductServiceImpl implements ProductService {
 
         return productMapper.toDetailResponse(product, stats);
     }
-
-
     @Override
     public Page<ProductListItemResponse> search(PublicProductSearchCondition condition, Pageable pageable) {
         Specification<Product> spec = ProductSpec.buildPublic(condition);
@@ -171,7 +170,7 @@ public class ProductServiceImpl implements ProductService {
                         ProductColorImage image = imageRepository
                                 .findMainImageByProductAndColor(product.getId(), ColorFamily.valueOf(colorName.toUpperCase()))
                                 .orElse(null);
-                        imgUrl = image != null ? image.getImageUrl() : base.slug();
+                        imgUrl = image != null ? image.getImageUrl() : base.imageUrl();
                         colorId = image != null ? image.getColor().getId() : colorId;
                         regularPrice = image != null ? image.getColor().getVariants().getFirst().getRegularPrice() : regularPrice;
                         salePrice = image != null ? image.getColor().getVariants().getFirst().getSalePrice() : salePrice;

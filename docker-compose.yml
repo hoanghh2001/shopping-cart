@@ -24,14 +24,14 @@ services:
       DB_USER: root
       DB_PASS: root
       FILE_UPLOAD_DIR: /app/uploads
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
     volumes:
       - ./uploads:/app/uploads
       
   redis:
     image: redis:7.2
     container_name: shopping-redis
-    ports:
-      - "6379:6379"
     command: redis-server --appendonly yes
     volumes:
       - redis-data:/data
