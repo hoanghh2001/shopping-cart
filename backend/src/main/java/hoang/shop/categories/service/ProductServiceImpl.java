@@ -143,11 +143,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ProductListItemResponse> search(PublicProductSearchCondition condition, Pageable pageable) {
+    public Slice<ProductListItemResponse> search(PublicProductSearchCondition condition, Pageable pageable) {
 
         Specification<Product> spec = ProductSpec.buildPublic(condition);
 
-        // 1) Parse filter color (an toàn, tránh valueOf nổ)
         ColorFamily filterColor = null;
         if (condition != null && condition.colors() != null && !condition.colors().isEmpty()) {
             try {
@@ -158,7 +157,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         // 2) Page products
-        Page<Product> page = productRepository.findAll(spec, pageable);
+        Slice<Product> page = productRepository.findAll(spec, pageable);
         List<Long> productIds = page.getContent().stream()
                 .map(Product::getId)
                 .toList();
@@ -220,7 +219,6 @@ public class ProductServiceImpl implements ProductService {
         final Map<Long, ProductColorImage> imageMap = tmpImageMap;
         final Map<Long, PriceTuple> priceMap = tmpPriceMap;
 
-        // 5) Map DTO (không query)
         return page.map(product -> {
             ProductReviewStats stats = statsMap.get(product.getId());
             ProductListItemResponse base = productMapper.toListItemResponse(product, stats);
@@ -268,6 +266,7 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
+    @Transactional(readOnly = true)
     public Slice<ProductListItemResponse> getNewProducts(Pageable pageable) {
         Instant from = Instant.now().minus(30, ChronoUnit.DAYS);
 
@@ -278,40 +277,51 @@ public class ProductServiceImpl implements ProductService {
                         .and(Sort.by(Sort.Direction.DESC, "id"))
         );
 
+        Slice<Product> slice = productRepository.findByCreatedAtGreaterThanEqual(from, sorted);
 
-        return productRepository.findByCreatedAtGreaterThanEqual(from, sorted)
-                .map((product -> {
-                    ProductReviewStats stats = statsRepository.findByProductId(product.getId())
-                            .orElse(null);
-                    ProductListItemResponse base = productMapper.toListItemResponse(product, stats);
+        List<Long> productIds = slice.getContent().stream()
+                .map(Product::getId)
+                .toList();
 
+        if (productIds.isEmpty()) {
+            return new SliceImpl<>(List.of(), pageable, false);
+        }
 
-                    ProductColor color = colorRepository.findFirstByProduct_IdAndMainTrue(product.getId())
-                            .orElse(null);
-                    Long colorId = color != null ? color.getId() : null;
-                    boolean productInStock = product.getColors().stream()
-                            .flatMap(c -> c.getVariants().stream())
-                            .anyMatch(v -> v.getStock() > 0);
-                    String imgUrl = base.imageUrl();
-                    BigDecimal regularPrice = base.regularPrice();
-                    BigDecimal salePrice = base.salePrice();
-                    return new ProductListItemResponse(
-                            product.getId(),
-                            colorId,
-                            base.name(),
-                            base.slug(),
-                            base.brandName(),
-                            base.brandSlug(),
-                            regularPrice,
-                            salePrice,
-                            base.averageRating(),
-                            base.reviewCount(),
-                            imgUrl,
-                            base.createdAt(),
-                            productInStock
+        Map<Long, ProductReviewStats> statsMap =
+                statsRepository.findByProductIdIn(productIds).stream()
+                        .collect(Collectors.toMap(ProductReviewStats::getProductId, Function.identity(), (a, b) -> a));
 
-                    );
-                }));
+        Map<Long, ProductColor> mainColorMap =
+                colorRepository.findMainColorsByProductIds(productIds).stream()
+                        .collect(Collectors.toMap(pc -> pc.getProduct().getId(), Function.identity(), (a, b) -> a));
+
+        Set<Long> inStockProductIds = new HashSet<>(variantRepository.findInStockProductIds(productIds));
+
+        return slice.map(product -> {
+            ProductReviewStats stats = statsMap.get(product.getId());
+            ProductListItemResponse base = productMapper.toListItemResponse(product, stats);
+
+            ProductColor mainColor = mainColorMap.get(product.getId());
+            Long colorId = (mainColor != null) ? mainColor.getId() : null;
+
+            boolean inStock = inStockProductIds.contains(product.getId());
+
+            return new ProductListItemResponse(
+                    product.getId(),
+                    colorId,
+                    base.name(),
+                    base.slug(),
+                    base.brandName(),
+                    base.brandSlug(),
+                    base.regularPrice(),
+                    base.salePrice(),
+                    base.averageRating(),
+                    base.reviewCount(),
+                    base.imageUrl(),
+                    base.createdAt(),
+                    inStock
+            );
+        });
     }
 
 

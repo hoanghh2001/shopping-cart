@@ -21,7 +21,7 @@ public interface ProductService {
     int restoreById(IdListRequest ids);
 
     ProductDetailResponse getActiveBySlug(String slug);
-    Page<ProductListItemResponse> search(PublicProductSearchCondition condition, Pageable pageable);
+    Slice<ProductListItemResponse> search(PublicProductSearchCondition condition, Pageable pageable);
 
     Slice<ProductListItemResponse> getNewProducts(Pageable pageable);
 }
