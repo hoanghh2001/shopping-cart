@@ -7,8 +7,10 @@ import hoang.shop.identity.dto.response.MyAccountResponse;
 import hoang.shop.identity.dto.response.SessionInfoResponse;
 import hoang.shop.identity.service.MyAccountService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/my-account")
 @RequiredArgsConstructor
+@Validated
 public class MyAccountController {
 
     private final MyAccountService myAccountService;
@@ -57,7 +60,7 @@ public class MyAccountController {
 
     @DeleteMapping("/sessions/{sessionId}")
     public ResponseEntity<Void> revokeSession(
-            @PathVariable Long sessionId
+            @PathVariable @Positive Long sessionId
     ) {
         myAccountService.revokeSession(sessionId);
         return ResponseEntity.noContent().build();

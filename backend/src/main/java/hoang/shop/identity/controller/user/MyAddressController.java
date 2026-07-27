@@ -6,8 +6,10 @@ import hoang.shop.identity.dto.response.AddressResponse;
 import hoang.shop.identity.service.AddressService;
 import hoang.shop.identity.service.CurrentUserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -16,19 +18,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/my-account/addresses")
 @RequiredArgsConstructor
+@Validated
 public class MyAddressController {
     private final AddressService addressService;
     private final CurrentUserService currentUserService;
 
     @PostMapping
-    public ResponseEntity<AddressResponse> create(@RequestBody AddressCreateRequest request) {
+    public ResponseEntity<AddressResponse> create(@Valid @RequestBody AddressCreateRequest request) {
         Long userId = currentUserService.getCurrentUserId();
         AddressResponse addressResponse = addressService.create(userId, request);
         URI location = URI.create("/api/my-account/addresses/"+addressResponse.id());
         return ResponseEntity.created(location).body(addressResponse);
     }
     @GetMapping("/{addressId}")
-    public ResponseEntity<AddressResponse> getById(
+    public ResponseEntity<AddressResponse> getById(@Positive @Valid
             @PathVariable Long addressId
     ) {
         Long userId = currentUserService.getCurrentUserId();

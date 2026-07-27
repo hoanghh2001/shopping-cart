@@ -1,669 +1,277 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <meta name="description" content="Oll Shop 注文管理" />
+    <title>注文管理 | Oll Shop Admin</title>
     <link rel="stylesheet" href="/assets/css/main.css" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   </head>
-  <body>
-    <div>
-      <div class="dashboard-main">
-        <aside class="admin-sidebar">
-          <div class="admin-sidebar_header">
-            <img class="admin-sidebar_header-logo" src="/assets/images/logoshop.png" alt="" /> <span>oll Shop</span>
+  <body class="admin-dashboard admin-orders-page">
+    <div class="admin-shell">
+      <aside class="admin-sidebar" id="adminSidebar" aria-label="管理メニュー">
+        <div class="admin-sidebar_header">
+          <a class="admin-brand" href="/index.html" aria-label="Oll Shop ホーム">
+            <img class="admin-sidebar_header-logo" src="/assets/images/logoshop.png" alt="" />
+            <span>Oll Shop</span>
+          </a>
+          <button class="sidebar-close" type="button" data-action="close-sidebar" aria-label="メニューを閉じる">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+          </button>
+        </div>
+
+        <nav class="admin-sidebar_nav">
+          <p class="sidebar-label">メニュー</p>
+          <a class="admin-sidebar_nav-secondary" href="./dashboard.html">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="7" rx="2" />
+              <rect x="14" y="3" width="7" height="7" rx="2" />
+              <rect x="3" y="14" width="7" height="7" rx="2" />
+              <rect x="14" y="14" width="7" height="7" rx="2" />
+            </svg>
+            <span>ダッシュボード</span>
+          </a>
+          <a class="admin-sidebar_nav-main" href="./orders.html" aria-current="page">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="4" y="3" width="16" height="18" rx="2" />
+              <path d="M8 8h8M8 12h8M8 16h5" />
+            </svg>
+            <span>注文管理</span>
+          </a>
+          <a class="admin-sidebar_nav-secondary" href="./products.html">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m3 7 9-4 9 4-9 4-9-4Z" />
+              <path d="M3 7v10l9 4 9-4V7M12 11v10" />
+            </svg>
+            <span>商品管理</span>
+          </a>
+          <a class="admin-sidebar_nav-secondary" href="./brands.html">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m4 9 4 3 4-6 4 6 4-3v9H4V9ZM4 18h16" />
+            </svg>
+            <span>ブランド管理</span>
+          </a>
+          <a class="admin-sidebar_nav-secondary" href="./tags.html">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 4h7l9 9-7 7-9-9V4Z" />
+              <circle cx="8.5" cy="8.5" r="1.2" />
+            </svg>
+            <span>タグ管理</span>
+          </a>
+          <a class="admin-sidebar_nav-secondary" href="./users.html">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="9" cy="8" r="4" />
+              <path d="M2.5 21a6.5 6.5 0 0 1 13 0M16 6.5a3.5 3.5 0 0 1 0 7M17.5 16a5 5 0 0 1 4 5" />
+            </svg>
+            <span>ユーザー管理</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <a class="admin-sidebar_nav-secondary" href="/index.html">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m3 11 9-8 9 8M5 10v10h14V10" />
+            </svg>
+            <span>ショップへ戻る</span>
+          </a>
+          <p>Oll Shop Admin</p>
+        </div>
+      </aside>
+
+      <button class="sidebar-backdrop" type="button" data-action="close-sidebar" aria-label="メニューを閉じる" tabindex="-1"></button>
+
+      <main class="dashboard-content">
+        <header class="dashboard-content_header orders-heading">
+          <div class="dashboard-heading">
+            <button
+              class="hamburger-btn"
+              type="button"
+              data-action="open-sidebar"
+              aria-label="管理メニューを開く"
+              aria-controls="adminSidebar"
+              aria-expanded="false"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+            </button>
+            <div>
+              <p class="dashboard-eyebrow">ORDER OPERATIONS</p>
+              <h1>注文管理</h1>
+              <p class="dashboard-date">注文の確認、検索、ステータス更新を一か所で管理します。</p>
+            </div>
           </div>
-          <nav class="admin-sidebar_nav">
-            <a class="admin-sidebar_nav-secondary" href="./dashboard.html"
-              ><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  d="M4 13.5a1.5 1.5 0 0 1 1.5-1.5H9a1.5 1.5 0 0 1 1.5 1.5V19A1.5 1.5 0 0 1 9 20.5H5.5A1.5 1.5 0 0 1 4 19v-5.5Z
-       M13.5 4A1.5 1.5 0 0 0 12 5.5V9a1.5 1.5 0 0 0 1.5 1.5H19A1.5 1.5 0 0 0 20.5 9V5.5A1.5 1.5 0 0 0 19 4h-5.5Z
-       M12 13.5a1.5 1.5 0 0 1 1.5-1.5H19a1.5 1.5 0 0 1 1.5 1.5V19A1.5 1.5 0 0 1 19 20.5h-5.5A1.5 1.5 0 0 1 12 19v-5.5Z
-       M4 5.5A1.5 1.5 0 0 1 5.5 4H9a1.5 1.5 0 0 1 1.5 1.5V9A1.5 1.5 0 0 1 9 10.5H5.5A1.5 1.5 0 0 1 4 9V5.5Z"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              <span>ダッシュボード</span></a
-            >
-            <a class="admin-sidebar_nav-main" href="./orders.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <rect x="4" y="3" width="16" height="18" rx="2" />
-                <path d="M8 7h8M8 11h8M8 15h6" />
-              </svg>
-              <span>注文管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./products.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M3 7l9-4 9 4-9 4-9-4z" />
-                <path d="M3 7v10l9 4 9-4V7" />
-                <path d="M12 11v10" />
-              </svg>
-              <span>商品管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./users.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M3 6h6l2 2h10v10a2 2 0 0 1-2 2H3z" />
-              </svg>
-              <span>カテゴリー管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./users.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-label="ブランド管理"
-              >
-                <path d="M4 9l4 3 4-6 4 6 4-3v9H4V9z" />
-                <path d="M4 18h16" />
-              </svg>
-              <span>ブランド管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./users.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M7 7h6l8 8-6 6-8-8z" />
-                <path d="M3 11h6l6 6-6 6-6-6z" />
-              </svg>
-              <span>タッグ管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./users.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="8" cy="7" r="3" />
-                <circle cx="17" cy="7" r="2.5" />
-                <path d="M2 19c0-3 3-5.5 6-5.5" />
-                <path d="M12 19c0-2.5 2.5-4.5 5-4.5" />
-              </svg>
-              <span>ユーザー管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="/index.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M3 11l9-8 9 8" />
-                <path d="M5 10v10h14V10" />
-              </svg>
-              <span>ホーム</span></a
-            >
-          </nav>
-        </aside>
+          <button class="orders-refresh" id="refreshOrders" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6v5h-5M4 18v-5h5M18.2 9A7 7 0 0 0 6.8 6.2L4 9M5.8 15A7 7 0 0 0 17.2 17.8L20 15" /></svg>
+            更新
+          </button>
+        </header>
 
-        <aside class="dashboard-content">
-          <header class="dashboard-content_header">
-            <h3>Orders</h3>
-            <select id="rangeFilter" class="filter-select">
-              <option value="LAST_7_DAYS">過去7日間</option>
-              <option value="TODAY">今日</option>
-              <option value="WTD">今週</option>
-              <option value="MTD">今月</option>
-              <option value="YTD">今年</option>
-            </select>
-          </header>
-          <main class="dashboard-content_main">
-            <section class="admin-orders">
-              <header class="admin-orders_header">
-                <div class="admin-orders_title">Order</div>
-                <div class="admin-orders_title-name">Customer</div>
-                <div class="admin-orders_title">Status</div>
-                <div class="admin-orders_title">Total</div>
-                <div class="admin-orders_title">Date</div>
-              </header>
-              <div class="divider"></div>
-              <main class="admin_list-order">
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                  <button class="admin-orders_content-btn" >
-                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                      <circle cx="12" cy="5" r="1.8"></circle>
-                      <circle cx="12" cy="12" r="1.8"></circle>
-                      <circle cx="12" cy="19" r="1.8"></circle>
-                    </svg>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-                <article class="admin-orders_main">
-                  <button
-                    class="order-row"
-                    data-id="390561"
-                    data-email="hoang01666193216@gmail.com"
-                    data-status="Paid"
-                    data-total="¥52,000"
-                    data-date="2026-01-08"
-                  >
-                    <div class="admin-orders_content">#390561</div>
-                    <div class="admin-orders_name">hoang01666193216@gmail.com</div>
-                    <div class="admin-orders_content">Paid</div>
-                    <div class="admin-orders_content">¥52,000</div>
-                    <div class="admin-orders_content">2026-01-08</div>
-                  </button>
-                </article>
-              </main>
-            </section>
-            <section class="dashboard_right">
-              <aside class="dashboard_top">
-                <div class="dashboard_top-header">
-                  <div class="header_title">注文ステータス概要</div>
-                  <button class="btn btn-outline btn-small">詳細</button>
-                </div>
-                <div class="dashboard_top-main">
-                  <div class="status-item">
-                    <span class="status-label">支払い待ち</span>
-                    <span class="status-count">4</span>
-                  </div>
-                  <div class="status-item">
-                    <span class="status-label">発送待ち</span>
-                    <span class="status-count">7</span>
-                  </div>
-                  <div class="status-item">
-                    <span class="status-label">発送済み</span>
-                    <span class="status-count">12</span>
-                  </div>
-                  <div class="status-item">
-                    <span class="status-label">完了</span>
-                    <span class="status-count">32</span>
-                  </div>
-                </div>
-              </aside>
-              <aside class="dashboard_top">
-                <div class="dashboard_top-header">
-                  <div class="header_title">今日の注文数</div>
-                  <button class="btn btn-outline btn-small">詳細</button>
-                </div>
+        <section class="orders-summary" aria-label="注文概要">
+          <article>
+            <span>総注文数</span>
+            <strong id="totalOrders">—</strong>
+            <small>検索条件に一致</small>
+          </article>
+          <article>
+            <span>表示中</span>
+            <strong id="visibleOrders">—</strong>
+            <small>現在のページ</small>
+          </article>
+          <article>
+            <span>対応待ち</span>
+            <strong id="pendingOrders">—</strong>
+            <small>作成・確認済み</small>
+          </article>
+          <article>
+            <span>表示中の売上</span>
+            <strong id="visibleRevenue">—</strong>
+            <small>キャンセル除外</small>
+          </article>
+        </section>
 
-                <div class="dashboard_top-main">
-                  <div class="status-item">
-                    <span class="status-label">新規</span>
-                    <span class="status-count">5</span>
-                  </div>
-                  <div class="status-item">
-                    <span class="status-label">確認待ち</span>
-                    <span class="status-count">2</span>
-                  </div>
-                  <div class="status-item">
-                    <span class="status-label">発送準備</span>
-                    <span class="status-count">3</span>
-                  </div>
-                  <div class="status-item">
-                    <span class="status-label">キャンセル</span>
-                    <span class="status-count">1</span>
-                  </div>
-                </div>
-              </aside>
-            </section>
-          </main>
-        </aside>
-      </div>
+        <section class="orders-panel">
+          <form class="orders-filters" id="ordersFilters">
+            <label class="orders-search">
+              <span class="sr-only">受取人名または電話番号で検索</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>
+              <input id="orderKeyword" name="keyword" type="search" placeholder="受取人名・電話番号で検索" autocomplete="off" />
+            </label>
+
+            <label>
+              <span>注文状況</span>
+              <select id="orderStatus" name="orderStatus">
+                <option value="">すべて</option>
+                <option value="CREATED">新規</option>
+                <option value="CONFIRMED">確認済み</option>
+                <option value="PACKING">梱包中</option>
+                <option value="SHIPPING">配送中</option>
+                <option value="DELIVERED">配達完了</option>
+                <option value="CANCELLED">キャンセル</option>
+              </select>
+            </label>
+
+            <label>
+              <span>支払い状況</span>
+              <select id="paymentStatus" name="paymentStatus">
+                <option value="">すべて</option>
+                <option value="PENDING">支払い待ち</option>
+                <option value="COMPLETED">支払い済み</option>
+                <option value="FAILED">失敗</option>
+                <option value="REFUNDED">返金済み</option>
+              </select>
+            </label>
+
+            <label>
+              <span>開始日</span>
+              <input id="fromDate" name="fromDate" type="date" />
+            </label>
+
+            <label>
+              <span>終了日</span>
+              <input id="toDate" name="toDate" type="date" />
+            </label>
+
+            <div class="filter-actions">
+              <button class="filter-submit" type="submit">絞り込む</button>
+              <button class="filter-reset" id="resetFilters" type="button">リセット</button>
+            </div>
+          </form>
+
+          <div class="orders-feedback orders-error" id="ordersError" role="alert" hidden>
+            <div>
+              <strong>注文データを取得できませんでした</strong>
+              <span>接続またはログイン状態を確認してください。</span>
+            </div>
+            <button type="button" id="retryOrders">再試行</button>
+          </div>
+
+          <div class="orders-table-wrap" role="region" aria-label="注文一覧" tabindex="0">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th scope="col">注文番号</th>
+                  <th scope="col">受取人</th>
+                  <th scope="col">注文状況</th>
+                  <th scope="col">支払い</th>
+                  <th scope="col">合計</th>
+                  <th scope="col">注文日時</th>
+                  <th scope="col"><span class="sr-only">操作</span></th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody"></tbody>
+            </table>
+
+            <div class="orders-loading" id="ordersLoading" aria-live="polite">
+              <span class="orders-spinner" aria-hidden="true"></span>
+              <span>注文を読み込んでいます。</span>
+            </div>
+
+            <div class="orders-empty" id="ordersEmpty" hidden>
+              <span class="orders-empty_icon" aria-hidden="true">□</span>
+              <strong>注文が見つかりません</strong>
+              <p>検索条件を変更して、もう一度お試しください。</p>
+              <button type="button" data-action="clear-filters">条件をクリア</button>
+            </div>
+          </div>
+
+          <footer class="orders-pagination">
+            <p id="paginationInfo">0件</p>
+            <div>
+              <button id="previousPage" type="button" aria-label="前のページ">←</button>
+              <span id="pageIndicator">1 / 1</span>
+              <button id="nextPage" type="button" aria-label="次のページ">→</button>
+            </div>
+          </footer>
+        </section>
+      </main>
     </div>
-    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-    <script type="module" src="/assets/js/pages/dashboard.js"></script>
+    <div class="order-drawer-backdrop" id="orderDrawerBackdrop" hidden></div>
+    <aside
+      class="order-drawer"
+      id="orderDrawer"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="drawerTitle"
+      aria-hidden="true"
+      inert
+    >
+      <header class="order-drawer_header">
+        <div>
+          <p>ORDER DETAIL</p>
+          <h2 id="drawerTitle">注文詳細</h2>
+        </div>
+        <button type="button" data-action="close-drawer" aria-label="注文詳細を閉じる">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </button>
+      </header>
+      <div class="order-drawer_body" id="orderDrawerBody"></div>
+      <footer class="order-drawer_footer" id="orderDrawerFooter"></footer>
+    </aside>
+
+    <dialog class="cancel-dialog" id="cancelDialog">
+      <form method="dialog" id="cancelForm">
+        <div>
+          <p class="dialog-kicker">CANCEL ORDER</p>
+          <h2>注文をキャンセル</h2>
+          <p>キャンセル理由を入力してください。この操作は元に戻せません。</p>
+        </div>
+        <label>
+          <span>キャンセル理由</span>
+          <textarea id="cancelReason" rows="4" maxlength="500" required placeholder="例：在庫切れのため"></textarea>
+        </label>
+        <p class="dialog-error" id="cancelError" hidden></p>
+        <div class="dialog-actions">
+          <button value="close" type="button" data-action="close-cancel">戻る</button>
+          <button class="is-danger" id="confirmCancel" value="confirm" type="submit">キャンセルを確定</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="admin-toast" id="adminToast" role="status" aria-live="polite"></div>
+    <script type="module" src="/assets/js/pages/admin-orders.js"></script>
   </body>
 </html>

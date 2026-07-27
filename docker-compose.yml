@@ -3,6 +3,8 @@ services:
   mysql:
     image: mysql:8.0
     container_name: shopping-mysql
+    ports:
+      - "3306:3306"
     restart: always
     environment:
       MYSQL_DATABASE: shopping_cart
@@ -24,19 +26,8 @@ services:
       DB_USER: root
       DB_PASS: root
       FILE_UPLOAD_DIR: /app/uploads
-      SPRING_DATA_REDIS_HOST: redis
-      SPRING_DATA_REDIS_PORT: 6379
     volumes:
       - ./uploads:/app/uploads
-      
-  redis:
-    image: redis:7.2
-    container_name: shopping-redis
-    command: redis-server --appendonly yes
-    volumes:
-      - redis-data:/data
-    restart: unless-stopped
 
 volumes:
   mysql-data:
-  redis-data:

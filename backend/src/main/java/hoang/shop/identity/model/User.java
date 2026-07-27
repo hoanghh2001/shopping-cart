@@ -91,7 +91,7 @@ public class User extends BaseEntity {
     private String avatarUrl;
 
     @Column(name = "last_login")
-    private Instant lastLogin;
+    private Instant lastLogin;                                  
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

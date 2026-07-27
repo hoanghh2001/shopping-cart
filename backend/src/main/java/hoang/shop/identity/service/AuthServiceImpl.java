@@ -1,10 +1,7 @@
 package hoang.shop.identity.service;
 
 import hoang.shop.common.enums.status.UserStatus;
-import hoang.shop.common.exception.BadRequestException;
-import hoang.shop.common.exception.InvalidCredentialsException;
-import hoang.shop.common.exception.NotFoundException;
-import hoang.shop.common.exception.UnauthorizedException;
+import hoang.shop.common.exception.*;
 import hoang.shop.identity.dto.request.ForgotPasswordRequest;
 import hoang.shop.identity.dto.request.LoginRequest;
 import hoang.shop.identity.dto.request.RegisterRequest;
@@ -55,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            throw new BadRequestException("{error.auth.email.duplicated}");
+            throw new DuplicateResourceException("{error.auth.email.duplicated}");
         }
         Role role = roleRepository.findByName("USER")
                 .orElseThrow(() -> new NotFoundException("{error.role.name.not-found}"));

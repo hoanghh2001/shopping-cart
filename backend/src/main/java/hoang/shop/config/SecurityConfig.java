@@ -32,47 +32,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                .authorizeHttpRequests(auth -> auth.requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**")
+                        .permitAll()
                         .requestMatchers("/api/admin/**")
                         .hasRole("ADMIN")
-                        .requestMatchers(
-                                "/api/auth/register",
-                                "/api/auth/login",
-                                "/api/auth/forgot-password",
-                                "/api/auth/reset-password",
-                                "/api/auth/refresh",
-                                "/api/auth/logout",
-                                "/uploads/**",
-                                "/images/**"
-                        ).permitAll()
-                        .requestMatchers(
-                                "/api/products/**",
-                                "/api/brands/**",
-                                "/api/categories/**",
-                                "/api/products/**",
-                                "/api/tags/**",
-                                "/api/variants/**",
-                                "/api/my"
-                        ).permitAll()
-                        .requestMatchers(
-                                "/docs/**",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/api-docs/**"
-                        ).permitAll()
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui.html",
-                                "/swagger-ui/**"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
-                .userDetailsService(userDetailsService);
+                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/forgot-password", "/api/auth/reset-password", "/api/auth/refresh", "/api/auth/logout", "/uploads/**", "/images/**")
+                        .permitAll().requestMatchers("/api/products/**", "/api/brands/**", "/api/categories/**", "/api/products/**", "/api/tags/**", "/api/variants/**", "/api/my")
+                        .permitAll().requestMatchers("/docs/**", "/swagger-ui/**", "/v3/api-docs/**", "/api-docs/**")
+                        .permitAll().requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**")
+                        .permitAll().anyRequest().authenticated()).userDetailsService(userDetailsService);
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -82,15 +53,18 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://hoangdev.com",
-                "https://www.hoangdev.com","https://api.hoangdev.com",
-                "https://www.api.hoangdev.com", "http://127.0.0.1:5500", "http://localhost:5500"));
-
+        config.setAllowedOrigins(List.of(
+                "https://hoangdev.com",
+                "https://www.hoangdev.com",
+                "https://api.hoangdev.com",
+                "https://www.api.hoangdev.com",
+                "http://127.0.0.1:5500",
+                "http://localhost:5500",
+                "http://10.27.130.20:5500"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         config.setExposedHeaders(List.of("Authorization"));
         config.setAllowCredentials(true);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;

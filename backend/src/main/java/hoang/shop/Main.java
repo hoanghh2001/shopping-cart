@@ -6,7 +6,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
 @EnableJpaAuditing
@@ -18,5 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class Main {
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
+
     }
 }

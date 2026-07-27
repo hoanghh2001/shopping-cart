@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +23,8 @@ import java.net.URI;
 @RestController
 @RequestMapping("/api/admin/categories")
 @RequiredArgsConstructor
+@Validated
+
 public class AdminCategoryController {
     private final CategoryService categoryService;
 

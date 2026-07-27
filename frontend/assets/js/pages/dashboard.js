@@ -1,397 +1,348 @@
 import { fetchOverview } from "../api/admin.js";
 import { checkLogin } from "../components/check-login.js";
-const revenueEl = document.getElementById("revenueDelta");
-const revenuePercentEl = document.getElementById("revenuePecent");
-const filterLabelEls = document.querySelectorAll(".filter-lable");
-const rangeEl = document.getElementById("rangeFilter");
-const cardTitleEl = document.getElementById("cardTitle");
-const yoyChartTitle = document.getElementById("yoyChartTitle");
-const orderCountEl = document.getElementById("orderCount");
-const orderCountPercentEl = document.getElementById("orderCountPercent");
-const newUserCountEl = document.getElementById("newUserCount");
-const newUserPercentEl = document.getElementById("newUserPercent");
-const visitsCountEl = document.getElementById("visitsCount");
-const visitsPercentEl = document.getElementById("visitsPercent");
-const adminSidebarEl = document.getElementById("adminSidebar");
-checkLogin();
-const RANGE_LABEL = {
-  LAST_7_DAYS: "過去7日間",
+
+const RANGE_LABELS = {
   TODAY: "今日",
+  LAST_7_DAYS: "過去7日間",
   WTD: "今週",
   MTD: "今月",
   YTD: "今年",
 };
 
-const RANGE_TO_CHART_KEY = {
-  LAST_7_DAYS: "7d",
-  TODAY: "1d",
-  WTD: "wtd",
-  MTD: "mtd",
-  YTD: "ytd",
+const METRIC_CONFIG = {
+  revenue: {
+    label: "売上",
+    responseKey: "revenue",
+    currentKey: "currentRevenue",
+    previousKey: "previousRevenue",
+    valueId: "revenueValue",
+    changeId: "revenueChange",
+    format: formatYen,
+  },
+  orders: {
+    label: "注文数",
+    responseKey: "orderCount",
+    currentKey: "current",
+    previousKey: "previous",
+    valueId: "ordersValue",
+    changeId: "ordersChange",
+    format: formatNumber,
+  },
+  visits: {
+    label: "訪問数",
+    responseKey: "visitorCount",
+    currentKey: "current",
+    previousKey: "previous",
+    valueId: "visitsValue",
+    changeId: "visitsChange",
+    format: formatNumber,
+  },
+  signups: {
+    label: "新規登録",
+    responseKey: "newUserCount",
+    currentKey: "current",
+    previousKey: "previous",
+    valueId: "signupsValue",
+    changeId: "signupsChange",
+    format: formatNumber,
+  },
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
-  await loadOverview();
-  rangeEl.addEventListener("change", async (e) => {
-    const enumRange = e.target.value;
-    filterLabelEls.forEach((el) => (el.textContent = RANGE_LABEL[enumRange] ?? enumRange));
-    updateSalesChart(enumRange);
-    const overview = await fetchOverview(enumRange);
-    renderRevenue(overview);
-    renderOrderCount(overview);
-    renderVisitsCount(overview);
-    renderNewUserCount(overview);
-  });
-  loadBottomChart();
+const elements = {
+  range: document.getElementById("rangeFilter"),
+  alert: document.getElementById("dashboardAlert"),
+  retry: document.getElementById("retryDashboard"),
+  sidebar: document.getElementById("adminSidebar"),
+  menuButton: document.querySelector('[data-action="open-sidebar"]'),
+  date: document.getElementById("dashboardDate"),
+  tableBody: document.getElementById("metricsTableBody"),
+  comparisonTitle: document.getElementById("comparisonTitle"),
+  comparisonPeriod: document.getElementById("comparisonPeriod"),
+  comparisonCurrent: document.getElementById("comparisonCurrent"),
+  comparisonBadge: document.getElementById("comparisonBadge"),
+  currentBar: document.getElementById("currentBar"),
+  previousBar: document.getElementById("previousBar"),
+  currentBarValue: document.getElementById("currentBarValue"),
+  previousBarValue: document.getElementById("previousBarValue"),
+  comparisonInsight: document.getElementById("comparisonInsight"),
+  connectionStatus: document.getElementById("connectionStatus"),
+  lastUpdated: document.getElementById("lastUpdated"),
+  statusPeriod: document.getElementById("statusPeriod"),
+  statusDot: document.getElementById("statusDot"),
+};
+
+let overviewData = null;
+let activeMetric = "revenue";
+let requestId = 0;
+
+document.addEventListener("DOMContentLoaded", () => {
+  checkLogin();
+  if (!document.body.classList.contains("admin-dashboard")) return;
+
+  renderToday();
+  bindEvents();
+  loadDashboard();
 });
-document.addEventListener("click", (e) => {
-  const el = e.target.closest("[data-metric]");
-  if (!el) return;
-  switch (el.dataset.metric) {
-    case "revenue":
-      cardTitleEl.textContent = "売上推移";
-      yoyChartTitle.textContent = "売上分析";
-      break;
-    case "orders":
-      cardTitleEl.textContent = "オーダー推移";
-      yoyChartTitle.textContent = "オーダー分析";
-      break;
-    case "visits":
-      cardTitleEl.textContent = "訪問数推移";
-      yoyChartTitle.textContent = "訪問数分析";
-      break;
-    case "signups":
-      cardTitleEl.textContent = "新規登録数推移";
-      yoyChartTitle.textContent = "新規登録数分析";
-      break;
+
+function bindEvents() {
+  elements.range.addEventListener("change", () => {
+    updatePeriodLabels();
+    loadDashboard();
+  });
+
+  elements.retry.addEventListener("click", loadDashboard);
+
+  document.addEventListener("click", (event) => {
+    const actionElement = event.target.closest("[data-action]");
+    if (actionElement) {
+      if (actionElement.dataset.action === "open-sidebar") openSidebar();
+      if (actionElement.dataset.action === "close-sidebar") closeSidebar();
+    }
+
+    const metricCard = event.target.closest("[data-metric]");
+    if (metricCard) selectMetric(metricCard.dataset.metric);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeSidebar();
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 900) closeSidebar();
+  });
+}
+
+async function loadDashboard() {
+  const currentRequest = ++requestId;
+  setLoadingState(true);
+  hideError();
+
+  try {
+    const data = await fetchOverview(elements.range.value);
+    if (currentRequest !== requestId) return;
+
+    overviewData = data;
+    renderDashboard(data);
+    setConnectionState(true);
+  } catch {
+    if (currentRequest !== requestId) return;
+
+    overviewData = null;
+    renderUnavailableState();
+    showError();
+    setConnectionState(false);
+  } finally {
+    if (currentRequest === requestId) setLoadingState(false);
   }
-});
-document.addEventListener("click", async (e) => {
-  const el = e.target.closest("[data-action]");
-  if (!el) return;
-  switch (el.dataset.action) {
-    case "toggle-categories-popup":
-      adminSidebarEl.classList.toggle("is-open");
-      break;
-  }
-});
-function initYoYBarChart() {
-  const canvas = document.getElementById("revenueYoYBarChart");
-  if (!canvas || !window.Chart) return;
+}
 
-  const labels = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
-  const thisYear = [420000, 380000, 510000, 460000, 530000, 600000, 720000, 680000, 640000, 760000, 820000, 900000];
-  const lastYear = [390000, 360000, 480000, 430000, 500000, 560000, 690000, 650000, 610000, 730000, 780000, 860000];
-  const adminBg = getComputedStyle(document.documentElement).getPropertyValue("--admin-color-bg");
-  new Chart(canvas, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "今年",
-          data: thisYear,
-          backgroundColor: adminBg,
-          borderRadius: 2,
-          borderSkipped: false,
-          barThickness: 20,
-        },
-        {
-          label: "前年",
-          data: lastYear,
-          backgroundColor: "rgba(108, 107, 113, 0.35)",
-          borderRadius: 2,
-          borderSkipped: false,
-          barThickness: 12,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: "top",
-          labels: {
-            boxWidth: 10,
-            boxHeight: 10,
-            usePointStyle: true,
-            font: { weight: "600" },
-          },
-        },
-        tooltip: {
-          backgroundColor: "#ffffff",
-          titleColor: "#111",
-          bodyColor: "#111",
-          borderColor: "#ddd",
-          borderWidth: 1,
-          cornerRadius: 10,
-          padding: 16,
-          titleFont: { size: 15, weight: "700" },
-          bodyFont: { size: 14, weight: "600" },
-          callbacks: {
-            title: (items) => items[0].label,
-            label: (ctx) => ` ${ctx.dataset.label}：¥${ctx.parsed.y.toLocaleString("ja-JP")}`,
-          },
-        },
-      },
-      scales: {
-        x: { grid: { display: false }, ticks: { font: { weight: "600" } } },
-        y: {
-          beginAtZero: true,
-          grid: { drawBorder: false },
-          ticks: { callback: (v) => `${v / 10000}万円` },
-        },
-      },
-      animation: { duration: 700, easing: "easeOutQuart" },
-    },
+function renderDashboard(data) {
+  Object.entries(METRIC_CONFIG).forEach(([metricKey, config]) => {
+    const metric = getMetric(data, config);
+    const valueElement = document.getElementById(config.valueId);
+    const changeElement = document.getElementById(config.changeId);
+
+    valueElement.textContent = config.format(metric.current);
+    renderChange(changeElement, metric.changeRate, "前期比", metric.previous, metric.current);
   });
-}
-function bindOverviewBoxes() {
-  const boxes = document.querySelectorAll(".overview-box");
-  if (!boxes.length) return;
 
-  boxes.forEach((box) => {
-    box.addEventListener("click", () => {
-      boxes.forEach((b) => b.classList.remove("is-active"));
-      box.classList.add("is-active");
-    });
+  renderMetricsTable(data);
+  renderComparison(activeMetric);
+}
+
+function getMetric(data, config) {
+  const source = data?.[config.responseKey] ?? {};
+  const current = toFiniteNumber(source[config.currentKey]);
+  const changeRate = toFiniteNumber(source.changeRate);
+  const previousValue = Number(source[config.previousKey]);
+
+  return {
+    current,
+    changeRate,
+    previous: Number.isFinite(previousValue) ? previousValue : calculatePrevious(current, changeRate),
+  };
+}
+
+function calculatePrevious(current, changeRate) {
+  if (changeRate <= -100) return current === 0 ? 0 : null;
+  const previous = current / (1 + changeRate / 100);
+  return Number.isFinite(previous) ? previous : null;
+}
+
+function renderMetricsTable(data) {
+  elements.tableBody.replaceChildren(
+    ...Object.entries(METRIC_CONFIG).map(([metricKey, config]) => {
+      const metric = getMetric(data, config);
+      const row = document.createElement("tr");
+      if (metricKey === activeMetric) row.classList.add("is-active");
+
+      const labelCell = createCell(config.label);
+      labelCell.dataset.label = "指標";
+      const currentCell = createCell(config.format(metric.current));
+      currentCell.dataset.label = "現在";
+      const previousCell = createCell(formatNullable(metric.previous, config.format));
+      previousCell.dataset.label = "前期";
+      const changeCell = document.createElement("td");
+      changeCell.dataset.label = "変化";
+      const change = document.createElement("span");
+      change.className = "table-change";
+      renderChange(change, metric.changeRate, "", metric.previous, metric.current);
+      changeCell.append(change);
+
+      row.append(labelCell, currentCell, previousCell, changeCell);
+      row.addEventListener("click", () => selectMetric(metricKey));
+      return row;
+    }),
+  );
+}
+
+function renderComparison(metricKey) {
+  const config = METRIC_CONFIG[metricKey];
+  elements.comparisonTitle.textContent = `${config.label}の比較`;
+  if (!overviewData) return;
+
+  const metric = getMetric(overviewData, config);
+  const previous = metric.previous ?? 0;
+  const maxValue = Math.max(metric.current, previous, 1);
+  const currentWidth = Math.max((metric.current / maxValue) * 100, metric.current > 0 ? 4 : 0);
+  const previousWidth = Math.max((previous / maxValue) * 100, previous > 0 ? 4 : 0);
+
+  elements.comparisonCurrent.textContent = config.format(metric.current);
+  elements.currentBarValue.textContent = config.format(metric.current);
+  elements.previousBarValue.textContent = formatNullable(metric.previous, config.format);
+  elements.currentBar.style.width = `${currentWidth}%`;
+  elements.previousBar.style.width = `${previousWidth}%`;
+  renderChange(elements.comparisonBadge, metric.changeRate, "", metric.previous, metric.current);
+
+  const direction = metric.current > previous ? "増加" : metric.current < previous ? "減少" : "変化なし";
+  const amount = Math.abs(metric.current - previous);
+  elements.comparisonInsight.textContent =
+    metric.previous === null
+      ? "前期が0のため、変化率から前期値を算出できません。"
+      : `${config.label}は前期と比べて${config.format(amount)}の${direction}です。`;
+}
+
+function selectMetric(metricKey) {
+  if (!METRIC_CONFIG[metricKey]) return;
+  activeMetric = metricKey;
+
+  document.querySelectorAll("[data-metric]").forEach((card) => {
+    const isActive = card.dataset.metric === metricKey;
+    card.classList.toggle("is-active", isActive);
+    card.setAttribute("aria-pressed", String(isActive));
   });
-}
 
-function bindMaskRemoveOnLoad() {
-  window.addEventListener("load", () => {
-    const mask = document.querySelector(".page-mask");
-    if (!mask) return;
-
-    mask.addEventListener("animationend", () => {
-      mask.remove();
-      document.body.style.overflow = "";
-    });
+  document.querySelectorAll(".metrics-table tbody tr").forEach((row, index) => {
+    row.classList.toggle("is-active", Object.keys(METRIC_CONFIG)[index] === metricKey);
   });
-}
-function loadBottomChart() {
-  bindMaskRemoveOnLoad();
-  bindOverviewBoxes();
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      document.body.classList.add("is-loaded");
-      if (typeof startAnimation === "function") startAnimation();
 
-      setTimeout(() => {
-        initSalesChart();
-      }, 280);
-      setTimeout(() => {
-        initYoYBarChart();
-      }, 420);
-    });
-  });
+  renderComparison(metricKey);
 }
 
-function formatYen(v) {
-  const n = Number(v ?? 0);
-  return `¥${n.toLocaleString("ja-JP")}`;
+function renderChange(element, rate, prefix = "", previous = null, current = null) {
+  const numericRate = toFiniteNumber(rate);
+  const isNew = previous === 0 && current > 0;
+  const sign = numericRate > 0 ? "+" : "";
+  element.classList.remove("is-positive", "is-negative", "is-neutral");
+  element.classList.add(isNew || numericRate > 0 ? "is-positive" : numericRate < 0 ? "is-negative" : "is-neutral");
+  element.textContent = `${prefix ? `${prefix} ` : ""}${isNew ? "新規" : `${sign}${numericRate.toFixed(1)}%`}`;
 }
 
-function renderRevenue(overview) {
-  const revenue = overview?.revenue;
-  if (!revenue) return;
-
-  revenueEl.textContent = formatYen(revenue.currentRevenue);
-
-  revenuePercentEl.classList.remove("is-negative");
-
-  const rate = Number(revenue.changeRate ?? 0);
-  if (rate < 0) revenuePercentEl.classList.add("is-negative");
-
-  const sign = rate > 0 ? "+" : "";
-  revenuePercentEl.textContent = `${sign}${rate.toFixed(2)}%`;
-}
-
-function renderOrderCount(overview) {
-  const order = overview.orderCount;
-  if (!order) return;
-  orderCountEl.textContent = order.current;
-  orderCountPercentEl.classList.remove("is-negative");
-
-  const rate = Number(order.changeRate ?? 0);
-  if (rate < 0) orderCountPercentEl.classList.add("is-negative");
-
-  const sign = rate > 0 ? "+" : "";
-  orderCountPercentEl.textContent = `${sign}${rate.toFixed(2)}%`;
-}
-function renderVisitsCount(overview) {
-  const visits = overview.visitorCount;
-  if (!visits) return;
-  visitsCountEl.textContent = visits.current;
-  visitsPercentEl.classList.remove("is-negative");
-
-  const rate = Number(visits.changeRate ?? 0);
-  if (rate < 0) visitsPercentEl.classList.add("is-negative");
-
-  const sign = rate > 0 ? "+" : "";
-  visitsPercentEl.textContent = `${sign}${rate.toFixed(2)}%`;
-}
-function renderNewUserCount(overview) {
-  const user = overview.newUserCount;
-  if (!user) return;
-  newUserCountEl.textContent = user.current;
-  newUserPercentEl.classList.remove("is-negative");
-
-  const rate = Number(user.changeRate ?? 0);
-  if (rate < 0) newUserPercentEl.classList.add("is-negative");
-
-  const sign = rate > 0 ? "+" : "";
-  newUserPercentEl.textContent = `${sign}${rate.toFixed(2)}%`;
-}
-let salesChart = null;
-const DATA_BY_RANGE = {
-  "1d": [
-    13000, 12000, 18000, 9000, 22000, 15000, 26000, 14000, 12000, 18000, 9000, 22000, 15000, 26000, 14000, 12000, 18000, 9000, 22000, 15000,
-    26000, 14000, 12000, 18000,
-  ],
-  "7d": [12000, 1300, 19000, 18000, 9000, 22000, 15000, 26000, 14000, 12000, 1300, 19000, 18000, 9000, 22000, 15000, 26000, 14000],
-  wtd: [12000, 18000, 9000, 22000, 15000],
-  mtd: [9000, 14000, 16000, 22000, 12000, 18000, 26000, 15000, 17000],
-  ytd: [8000, 12000, 15000, 11000, 20000, 24000, 18000, 26000, 22000, 30000, 28000, 32000],
-};
-
-const LABELS_BY_RANGE = {
-  "1d": [
-    "0時",
-    "1時",
-    "2時",
-    "3時",
-    "4時",
-    "5時",
-    "6時",
-    "7時",
-    "8時",
-    "9時",
-    "10時",
-    "11時",
-    "12時",
-    "13時",
-    "14時",
-    "15時",
-    "16時",
-    "17時",
-    "18時",
-    "19時",
-    "20時",
-    "21時",
-    "22時",
-    "23時",
-  ],
-  "7d": getLast7DaysLabels(),
-  wtd: ["月", "火", "水", "木", "金", "土", "日"],
-  mtd: Array.from({ length: 9 }, (_, i) => `${i + 1}`),
-  ytd: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
-};
-function getLast7DaysLabels() {
-  const daysJa = ["日", "月", "火", "水", "木", "金", "土"];
-  const today = new Date();
-
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(today);
-    d.setDate(today.getDate() - (6 - i));
-    return daysJa[d.getDay()];
+function setLoadingState(isLoading) {
+  elements.range.disabled = isLoading;
+  elements.retry.disabled = isLoading;
+  document.querySelectorAll(".metric-card_value").forEach((element) => {
+    element.classList.toggle("is-loading", isLoading);
   });
 }
 
-function getChartKeyFromEnum(enumRange) {
-  return RANGE_TO_CHART_KEY[enumRange] || "7d";
-}
-function getLabels(chartKey) {
-  return LABELS_BY_RANGE[chartKey] ?? LABELS_BY_RANGE["7d"];
-}
-function getValues(chartKey) {
-  return DATA_BY_RANGE[chartKey] ?? DATA_BY_RANGE["7d"];
-}
-
-function initSalesChart() {
-  const canvas = document.getElementById("salesBarChart");
-  if (!canvas || !window.Chart) return;
-
-  const chartKey = getChartKeyFromEnum(rangeEl?.value || "LAST_7_DAYS");
-
-  if (salesChart) salesChart.destroy();
-
-  salesChart = new Chart(canvas, {
-    type: "line",
-    data: {
-      labels: getLabels(chartKey),
-      datasets: [
-        {
-          data: getValues(chartKey),
-          tension: 0.4,
-          borderColor: "rgb(57, 36, 16)",
-          backgroundColor: "rgba(88, 85, 67, 0.25)",
-          fill: true,
-          pointRadius: 0,
-          pointHitRadius: 12,
-          pointHoverRadius: 4,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: { duration: 900, easing: "easeOutQuart" },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: "#ffffff",
-          titleColor: "#111",
-          bodyColor: "#111",
-          borderColor: "#ddd",
-          borderWidth: 1,
-          cornerRadius: 10,
-          padding: 16,
-          titleFont: { size: 15, weight: "700" },
-          bodyFont: { size: 14, weight: "600" },
-          callbacks: { label: (ctx) => `¥${Number(ctx.raw ?? 0).toLocaleString("ja-JP")}` },
-        },
-      },
-      interaction: {
-        mode: "nearest",
-        intersect: false,
-        axis: "x",
-      },
-      hover: {
-        mode: "nearest",
-        intersect: false,
-      },
-
-      scales: {
-        x: { grid: { display: false }, ticks: { color: "rgb(0, 0, 0)", size: 15, weight: "700" } },
-        y: {
-          grid: { color: "rgba(0,0,0,0.05)" },
-          ticks: { callback: (v) => `¥${Number(v).toLocaleString("ja-JP")}` },
-        },
-      },
-    },
+function renderUnavailableState() {
+  Object.values(METRIC_CONFIG).forEach((config) => {
+    document.getElementById(config.valueId).textContent = "—";
+    const changeElement = document.getElementById(config.changeId);
+    changeElement.textContent = "前期比 —";
+    changeElement.classList.remove("is-positive", "is-negative", "is-neutral");
   });
+
+  elements.tableBody.innerHTML = '<tr><td colspan="4" class="table-loading">表示できるデータがありません。</td></tr>';
+  elements.comparisonCurrent.textContent = "—";
+  elements.comparisonBadge.textContent = "—";
+  elements.currentBar.style.width = "0";
+  elements.previousBar.style.width = "0";
+  elements.currentBarValue.textContent = "—";
+  elements.previousBarValue.textContent = "—";
+  elements.comparisonInsight.textContent = "データ取得後に比較結果が表示されます。";
 }
 
-function updateSalesChart(enumRange) {
-  if (!salesChart) return;
-
-  const chartKey = getChartKeyFromEnum(enumRange);
-  salesChart.data.labels = getLabels(chartKey);
-  salesChart.data.datasets[0].data = getValues(chartKey);
-  salesChart.update({ duration: 700, easing: "easeOutQuart" });
+function updatePeriodLabels() {
+  const label = RANGE_LABELS[elements.range.value] ?? elements.range.value;
+  elements.comparisonPeriod.textContent = label;
+  elements.statusPeriod.textContent = label;
 }
 
-async function loadOverview() {
-  const enumRange = rangeEl.value;
-  const label = RANGE_LABEL[enumRange] ?? enumRange;
+function setConnectionState(isConnected) {
+  elements.connectionStatus.textContent = isConnected ? "接続済み" : "接続エラー";
+  elements.connectionStatus.classList.toggle("is-error", !isConnected);
+  elements.statusDot.classList.toggle("is-error", !isConnected);
+  elements.lastUpdated.textContent = isConnected
+    ? new Intl.DateTimeFormat("ja-JP", { hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(new Date())
+    : "—";
+}
 
-  filterLabelEls.forEach((el) => (el.textContent = label));
+function renderToday() {
+  elements.date.textContent = new Intl.DateTimeFormat("ja-JP", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "long",
+  }).format(new Date());
+  updatePeriodLabels();
+}
 
-  const overview = await fetchOverview(enumRange);
-  renderRevenue(overview);
-  renderOrderCount(overview);
-  renderVisitsCount(overview);
-  renderNewUserCount(overview);
+function openSidebar() {
+  elements.sidebar.classList.add("is-open");
+  document.body.classList.add("sidebar-open");
+  elements.menuButton.setAttribute("aria-expanded", "true");
+  elements.sidebar.querySelector("a")?.focus();
+}
+
+function closeSidebar() {
+  elements.sidebar.classList.remove("is-open");
+  document.body.classList.remove("sidebar-open");
+  elements.menuButton.setAttribute("aria-expanded", "false");
+}
+
+function showError() {
+  elements.alert.hidden = false;
+}
+
+function hideError() {
+  elements.alert.hidden = true;
+}
+
+function createCell(text) {
+  const cell = document.createElement("td");
+  cell.textContent = text;
+  return cell;
+}
+
+function formatYen(value) {
+  return new Intl.NumberFormat("ja-JP", {
+    style: "currency",
+    currency: "JPY",
+    maximumFractionDigits: 0,
+  }).format(toFiniteNumber(value));
+}
+
+function formatNumber(value) {
+  return new Intl.NumberFormat("ja-JP").format(toFiniteNumber(value));
+}
+
+function formatNullable(value, formatter) {
+  return value === null ? "—" : formatter(value);
+}
+
+function toFiniteNumber(value) {
+  const number = Number(value ?? 0);
+  return Number.isFinite(number) ? number : 0;
 }

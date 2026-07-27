@@ -31,7 +31,7 @@ springdoc:
   swagger-ui:
     path: /docs
   api-docs:
-    path: /api-docs
+    path: /api-docs1
 
 file:
   upload-dir: ${FILE_UPLOAD_DIR:uploads}

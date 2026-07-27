@@ -54,27 +54,6 @@ public class UserOrderController {
         return ResponseEntity.ok(body);
     }
 
-    //    @GetMapping("/orders/status")
-//    public ResponseEntity<List<OrderResponse>>findOrdersOfUserByStatus(@RequestParam OrderStatus status) {
-//        Long userId = currentUserService.getCurrentUserId();
-//        List<OrderResponse> body = orderService.findOrdersOfUserByStatus(userId, status);
-//        return ResponseEntity.ok(body);
-//    }
-//    @GetMapping("/order-items/{orderItemId}")
-//    public ResponseEntity<OrderItemResponse> getOrderItemForUser(
-//            @PathVariable Long orderItemId) {
-//        Long userId = currentUserService.getCurrentUserId();
-//        OrderItemResponse body =  orderService.getOrderItemForUser(userId, orderItemId);
-//        return ResponseEntity.ok(body);
-//    }
-//    @GetMapping("/orders/{orderId}/items")
-//    public ResponseEntity<Slice<OrderItemResponse>> findItemsOfOrderForUser(
-//            @PathVariable Long orderId,
-//            Pageable pageable) {
-//        Long userId = currentUserService.getCurrentUserId();
-//        Slice<OrderItemResponse> body = orderService.findItemsOfOrderForUser(userId, orderId,pageable);
-//        return ResponseEntity.ok(body);
-//    }
     @GetMapping("/orders/{orderId}/status-histories")
     public ResponseEntity<List<OrderStatusHistoryResponse>> findStatusHistoryByOrderIdForUser(
             @PathVariable Long orderId) {

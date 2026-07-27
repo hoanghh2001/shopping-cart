@@ -9,6 +9,7 @@ import hoang.shop.identity.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import java.time.Duration;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
     private final AuthService authService;
 
@@ -43,6 +45,9 @@ public class AuthController {
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+        log.info("User login success. userId={}, email={}",
+                user.user().id(),
+                user.user().email());
         return ResponseEntity.ok(user);
     }
 

@@ -7,8 +7,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 public record AddressCreateRequest(
-
+        @NotBlank(message = "{error.address.firstName.required}")
         String firstName,
+        @NotBlank(message = "{error.address.lastName.required}")
         String lastName,
         @NotNull
         String phone,
@@ -24,7 +25,7 @@ public record AddressCreateRequest(
         String prefecture,
 
         @Pattern(
-                regexp = "^.+[市区町村]$",
+                regexp = "^.*[市区].*$",
                 message = "{error.address.municipality.invalid}")
         String municipality,
 

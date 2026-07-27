@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/images")
 @RequiredArgsConstructor
+@Validated
+
 public class AdminProductColorImageController {
     private final ProductColorImageService imageService;
 

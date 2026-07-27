@@ -4,6 +4,7 @@ import hoang.shop.categories.dto.response.AdminListItemProductResponse;
 import lombok.RequiredArgsConstructor;
 import hoang.shop.categories.service.ProductTagService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin/products/{productId}/tags")
 @RequiredArgsConstructor
+@Validated
 public class AdminProductTagController {
     private final ProductTagService productTagService;
     @PostMapping

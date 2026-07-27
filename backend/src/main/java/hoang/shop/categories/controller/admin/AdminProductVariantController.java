@@ -11,11 +11,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin/variants")
 @RequiredArgsConstructor
+@Validated
 public class AdminProductVariantController {
     private final ProductVariantService variantService;
 
