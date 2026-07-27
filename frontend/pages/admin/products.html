@@ -1,290 +1,309 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <meta name="description" content="Oll Shop 商品管理" />
+    <title>商品管理 | Oll Shop Admin</title>
     <link rel="stylesheet" href="/assets/css/main.css" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   </head>
-  <body>
-    <div>
-      <div class="dashboard-main">
-        <aside class="admin-sidebar">
-          <div class="admin-sidebar_header">
-            <img class="admin-sidebar_header-logo" src="/assets/images/logoshop.png" alt="" /> <span>oll Shop</span>
+  <body class="admin-dashboard admin-products-page">
+    <div class="admin-shell">
+      <aside class="admin-sidebar" id="adminSidebar" aria-label="管理メニュー">
+        <div class="admin-sidebar_header">
+          <a class="admin-brand" href="/index.html" aria-label="Oll Shop ホーム">
+            <img class="admin-sidebar_header-logo" src="/assets/images/logoshop.png" alt="" />
+            <span>Oll Shop</span>
+          </a>
+          <button class="sidebar-close" type="button" data-action="close-sidebar" aria-label="メニューを閉じる">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+          </button>
+        </div>
+
+        <nav class="admin-sidebar_nav">
+          <p class="sidebar-label">メニュー</p>
+          <a class="admin-sidebar_nav-secondary" href="./dashboard.html">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="3" width="7" height="7" rx="2" />
+              <rect x="14" y="3" width="7" height="7" rx="2" />
+              <rect x="3" y="14" width="7" height="7" rx="2" />
+              <rect x="14" y="14" width="7" height="7" rx="2" />
+            </svg>
+            <span>ダッシュボード</span>
+          </a>
+          <a class="admin-sidebar_nav-secondary" href="./orders.html">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="4" y="3" width="16" height="18" rx="2" />
+              <path d="M8 8h8M8 12h8M8 16h5" />
+            </svg>
+            <span>注文管理</span>
+          </a>
+          <a class="admin-sidebar_nav-main" href="./products.html" aria-current="page">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m3 7 9-4 9 4-9 4-9-4Z" />
+              <path d="M3 7v10l9 4 9-4V7M12 11v10" />
+            </svg>
+            <span>商品管理</span>
+          </a>
+          <a class="admin-sidebar_nav-secondary" href="./brands.html">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m4 9 4 3 4-6 4 6 4-3v9H4V9ZM4 18h16" />
+            </svg>
+            <span>ブランド管理</span>
+          </a>
+          <a class="admin-sidebar_nav-secondary" href="./tags.html">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 4h7l9 9-7 7-9-9V4Z" />
+              <circle cx="8.5" cy="8.5" r="1.2" />
+            </svg>
+            <span>タグ管理</span>
+          </a>
+          <a class="admin-sidebar_nav-secondary" href="./users.html">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="9" cy="8" r="4" />
+              <path d="M2.5 21a6.5 6.5 0 0 1 13 0M16 6.5a3.5 3.5 0 0 1 0 7M17.5 16a5 5 0 0 1 4 5" />
+            </svg>
+            <span>ユーザー管理</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <a class="admin-sidebar_nav-secondary" href="/index.html">
+            <svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m3 11 9-8 9 8M5 10v10h14V10" />
+            </svg>
+            <span>ショップへ戻る</span>
+          </a>
+          <p>Oll Shop Admin</p>
+        </div>
+      </aside>
+
+      <button class="sidebar-backdrop" type="button" data-action="close-sidebar" aria-label="メニューを閉じる" tabindex="-1"></button>
+
+      <main class="dashboard-content">
+        <header class="dashboard-content_header products-heading">
+          <div class="dashboard-heading">
+            <button
+              class="hamburger-btn"
+              type="button"
+              data-action="open-sidebar"
+              aria-label="管理メニューを開く"
+              aria-controls="adminSidebar"
+              aria-expanded="false"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+            </button>
+            <div>
+              <p class="dashboard-eyebrow">CATALOG</p>
+              <h1>商品管理</h1>
+              <p class="dashboard-date">商品情報、公開状態、カラーと在庫を管理します。</p>
+            </div>
           </div>
-          <nav class="admin-sidebar_nav">
-            <a class="admin-sidebar_nav-secondary" href="./dashboard.html"
-              ><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  d="M4 13.5a1.5 1.5 0 0 1 1.5-1.5H9a1.5 1.5 0 0 1 1.5 1.5V19A1.5 1.5 0 0 1 9 20.5H5.5A1.5 1.5 0 0 1 4 19v-5.5Z
-       M13.5 4A1.5 1.5 0 0 0 12 5.5V9a1.5 1.5 0 0 0 1.5 1.5H19A1.5 1.5 0 0 0 20.5 9V5.5A1.5 1.5 0 0 0 19 4h-5.5Z
-       M12 13.5a1.5 1.5 0 0 1 1.5-1.5H19a1.5 1.5 0 0 1 1.5 1.5V19A1.5 1.5 0 0 1 19 20.5h-5.5A1.5 1.5 0 0 1 12 19v-5.5Z
-       M4 5.5A1.5 1.5 0 0 1 5.5 4H9a1.5 1.5 0 0 1 1.5 1.5V9A1.5 1.5 0 0 1 9 10.5H5.5A1.5 1.5 0 0 1 4 9V5.5Z"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              <span>ダッシュボード</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./orders.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <rect x="4" y="3" width="16" height="18" rx="2" />
-                <path d="M8 7h8M8 11h8M8 15h6" />
-              </svg>
-              <span>注文管理</span></a
-            >
-            <a class="admin-sidebar_nav-main" href="./products.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M3 7l9-4 9 4-9 4-9-4z" />
-                <path d="M3 7v10l9 4 9-4V7" />
-                <path d="M12 11v10" />
-              </svg>
-              <span>商品管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./users.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M3 6h6l2 2h10v10a2 2 0 0 1-2 2H3z" />
-              </svg>
-              <span>カテゴリー管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./users.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-label="ブランド管理"
-              >
-                <path d="M4 9l4 3 4-6 4 6 4-3v9H4V9z" />
-                <path d="M4 18h16" />
-              </svg>
-              <span>ブランド管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./users.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M7 7h6l8 8-6 6-8-8z" />
-                <path d="M3 11h6l6 6-6 6-6-6z" />
-              </svg>
-              <span>タッグ管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./users.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="8" cy="7" r="3" />
-                <circle cx="17" cy="7" r="2.5" />
-                <path d="M2 19c0-3 3-5.5 6-5.5" />
-                <path d="M12 19c0-2.5 2.5-4.5 5-4.5" />
-              </svg>
-              <span>ユーザー管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="/index.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M3 11l9-8 9 8" />
-                <path d="M5 10v10h14V10" />
-              </svg>
-              <span>ホーム</span></a
-            >
-          </nav>
-        </aside>
+          <button class="product-create-button" type="button" data-action="open-create">
+            <span aria-hidden="true">＋</span>
+            商品を追加
+          </button>
+        </header>
 
-        <aside class="dashboard-content">
-          <header class="dashboard-content_header">
-            <h3>Products</h3>
-            <select id="rangeFilter" class="filter-select">
-              <option value="LAST_7_DAYS">過去7日間</option>
-              <option value="TODAY">今日</option>
-              <option value="WTD">今週</option>
-              <option value="MTD">今月</option>
-              <option value="YTD">今年</option>
-            </select>
-          </header>
+        <section class="products-summary" aria-label="商品概要">
+          <article>
+            <span>商品数</span>
+            <strong id="totalProducts">—</strong>
+            <small>検索条件に一致</small>
+          </article>
+          <article>
+            <span>表示中</span>
+            <strong id="visibleProducts">—</strong>
+            <small>現在のページ</small>
+          </article>
+          <article>
+            <span>公開中</span>
+            <strong id="activeProducts">—</strong>
+            <small>現在のページ</small>
+          </article>
+          <article>
+            <span>削除済み</span>
+            <strong id="deletedProducts">—</strong>
+            <small>現在のページ</small>
+          </article>
+        </section>
 
-          <main class="dashboard-content_main">
-            <section class="padmin">
-              <div class="padmin__card">
-                <div class="padmin__tableWrap" role="region" aria-label="Products table" tabindex="0">
-                  <table class="padminTable">
-                    <colgroup>
-                      <col style="width: 44px" />
-                      <col style="width: 44px" />
-                      <col />
-                      <col style="width: 86px" />
-                      <col style="width: 120px" />
-                      <col style="width: 75px" />
-                      <col style="width: 140px" />
-                      <col style="width: 120px" />
-                      <col style="width: 50px" />
-                    </colgroup>
+        <section class="products-panel">
+          <form class="products-filters" id="productFilters">
+            <label class="product-search">
+              <span class="sr-only">商品名で検索</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-4-4" /></svg>
+              <input id="productKeyword" type="search" placeholder="商品名で検索" autocomplete="off" />
+            </label>
 
-                    <thead class="padminTable__head">
-                      <tr class="padminTable__row">
-                        <th class="pcol pcol--checkbox">
-                          <input class="padminCheck" type="checkbox" aria-label="Select all products" />
-                        </th>
-                        <th class="pcol pcol--id">ID</th>
-                        <th class="pcol pcol--product">Product</th>
-                        <th class="pcol pcol--image">Image</th>
-                        <th class="pcol pcol--brand">Brand</th>
-                        <th class="pcol pcol--variants">Variants</th>
-                        <th class="pcol pcol--date">Date</th>
-                        <th class="pcol pcol--status">Status</th>
-                        <th class="pcol pcol--actions" aria-label="Actions"></th>
-                      </tr>
-                    </thead>
+            <label>
+              <span>ステータス</span>
+              <select id="productStatus">
+                <option value="">すべて</option>
+                <option value="ACTIVE">公開中</option>
+                <option value="INACTIVE">非公開</option>
+                <option value="DELETED">削除済み</option>
+              </select>
+            </label>
 
-                    <tbody class="padminTable__body" id="padminTable"></tbody>
-                  </table>
-                  <div class="address-loading" id="loading">
-                    <span class="spinner"></span>
-                  </div>
-                </div>
-              </div>
-            </section>
+            <label>
+              <span>ブランド</span>
+              <select id="brandFilter">
+                <option value="">すべて</option>
+              </select>
+            </label>
 
-            <section class="dashboard_right">
-              <aside class="dashboard_top">
-                <div class="dashboard_top-header">
-                  <div class="header_title">Overview</div>
-                </div>
-                <div class="dashboard_top-main">
-                  <aside class="overview-panel">
-                    <!-- Header -->
-                    <header class="overview-header">
-                      <div class="overview-name">アディダス ランニングシューズ</div>
-                      <div class="overview-sub">
-                        <span class="overview-id">#390561</span>
-                        <span class="dot">•</span>
-                        <span class="overview-stock">Stock <b>10</b></span>
-                      </div>
-                    </header>
+            <label>
+              <span>カテゴリー</span>
+              <select id="categoryFilter">
+                <option value="">すべて</option>
+              </select>
+            </label>
 
-                    <!-- Variants -->
-                    <div class="overview-variants">
-                      <!-- Color block -->
-                      <section class="color-block">
-                        <!-- TOP: image + name -->
-                        <div class="color-top">
-                          <img class="color-image" src="/assets/images/default/no-image.png" alt="Black" />
-                          <div class="color-title">
-                            <div class="color-name">Black</div>
-                            <div class="color-hint">Sizes & stock</div>
-                          </div>
-                        </div>
+            <div class="product-filter-actions">
+              <button class="product-filter-submit" type="submit">絞り込む</button>
+              <button class="product-filter-reset" id="resetProductFilters" type="button">リセット</button>
+            </div>
+          </form>
 
-                        <!-- BOTTOM: size boxes -->
-                        <div class="size-grid">
-                          <div class="size-box is-ok">
-                            <div class="size-box-size">40</div>
-                            <div class="size-box-qty">5</div>
-                          </div>
+          <div class="product-bulk-bar" id="productBulkBar" hidden>
+            <span><strong id="selectedProductCount">0</strong>件を選択中</span>
+            <div>
+              <button type="button" data-action="bulk-restore">選択を復元</button>
+              <button class="is-danger" type="button" data-action="bulk-delete">選択を削除</button>
+            </div>
+          </div>
 
-                          <div class="size-box is-low">
-                            <div class="size-box-size">41</div>
-                            <div class="size-box-qty">2</div>
-                          </div>
+          <div class="products-feedback products-error" id="productsError" role="alert" hidden>
+            <div>
+              <strong>商品データを取得できませんでした</strong>
+              <span>接続またはログイン状態を確認してください。</span>
+            </div>
+            <button type="button" id="retryProducts">再試行</button>
+          </div>
 
-                          <div class="size-box is-ok">
-                            <div class="size-box-size">42</div>
-                            <div class="size-box-qty">3</div>
-                          </div>
+          <div class="products-table-wrap" role="region" aria-label="商品一覧" tabindex="0">
+            <table class="products-table">
+              <thead>
+                <tr>
+                  <th scope="col"><input id="selectAllProducts" type="checkbox" aria-label="表示中の商品をすべて選択" /></th>
+                  <th scope="col">商品</th>
+                  <th scope="col">ブランド</th>
+                  <th scope="col">カテゴリー</th>
+                  <th scope="col">ステータス</th>
+                  <th scope="col">更新日</th>
+                  <th scope="col"><span class="sr-only">操作</span></th>
+                </tr>
+              </thead>
+              <tbody id="productsTableBody"></tbody>
+            </table>
 
-                          <div class="size-box is-zero">
-                            <div class="size-box-size">43</div>
-                            <div class="size-box-qty">0</div>
-                          </div>
-                        </div>
-                      </section>
+            <div class="products-loading" id="productsLoading" aria-live="polite">
+              <span class="products-spinner" aria-hidden="true"></span>
+              <span>商品を読み込んでいます。</span>
+            </div>
 
-                      <!-- Color block -->
-                      <section class="color-block">
-                        <div class="color-top">
-                          <img class="color-image" src="/assets/images/default/no-image.png" alt="Blue" />
-                          <div class="color-title">
-                            <div class="color-name">Blue</div>
-                            <div class="color-hint">Sizes & stock</div>
-                          </div>
-                        </div>
+            <div class="products-empty" id="productsEmpty" hidden>
+              <span class="products-empty-icon" aria-hidden="true">□</span>
+              <strong>商品が見つかりません</strong>
+              <p>検索条件を変更して、もう一度お試しください。</p>
+              <button type="button" data-action="clear-filters">条件をクリア</button>
+            </div>
+          </div>
 
-                        <div class="size-grid">
-                          <div class="size-box is-zero">
-                            <div class="size-box-size">41</div>
-                            <div class="size-box-qty">0</div>
-                          </div>
-
-                          <div class="size-box is-zero">
-                            <div class="size-box-size">42</div>
-                            <div class="size-box-qty">0</div>
-                          </div>
-                        </div>
-                      </section>
-                    </div>
-                  </aside>
-                </div>
-              </aside>
-            </section>
-          </main>
-        </aside>
-      </div>
+          <footer class="products-pagination">
+            <p id="productPaginationInfo">0件</p>
+            <div>
+              <button id="previousProductPage" type="button" aria-label="前のページ">←</button>
+              <span id="productPageIndicator">1 / 1</span>
+              <button id="nextProductPage" type="button" aria-label="次のページ">→</button>
+            </div>
+          </footer>
+        </section>
+      </main>
     </div>
-    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
+    <div class="product-drawer-backdrop" id="productDrawerBackdrop" hidden></div>
+    <aside
+      class="product-drawer"
+      id="productDrawer"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="productDrawerTitle"
+      aria-hidden="true"
+      inert
+    >
+      <header class="product-drawer-header">
+        <div>
+          <p>PRODUCT DETAIL</p>
+          <h2 id="productDrawerTitle">商品詳細</h2>
+        </div>
+        <button type="button" data-action="close-drawer" aria-label="商品詳細を閉じる">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+        </button>
+      </header>
+      <div class="product-drawer-body" id="productDrawerBody"></div>
+      <footer class="product-drawer-footer" id="productDrawerFooter"></footer>
+    </aside>
+
+    <dialog class="product-form-dialog" id="productFormDialog">
+      <form id="productForm">
+        <header>
+          <div>
+            <p>PRODUCT</p>
+            <h2 id="productFormTitle">商品を追加</h2>
+          </div>
+          <button type="button" data-action="close-form" aria-label="フォームを閉じる">×</button>
+        </header>
+
+        <input id="editingProductId" type="hidden" />
+        <label>
+          <span>商品名 <b>必須</b></span>
+          <input id="productName" type="text" maxlength="150" required placeholder="例：ヴァンズ デイリーシューズ" />
+        </label>
+        <label id="productSlugField" hidden>
+          <span>スラッグ <b>必須</b></span>
+          <input id="productSlug" type="text" maxlength="180" placeholder="vans-daily-shoes" />
+        </label>
+        <div class="form-grid">
+          <label>
+            <span>カテゴリー <b>必須</b></span>
+            <select id="productCategory" required><option value="">選択してください</option></select>
+          </label>
+          <label>
+            <span>ブランド</span>
+            <select id="productBrand"><option value="">ブランドなし</option></select>
+          </label>
+        </div>
+        <label>
+          <span>説明</span>
+          <textarea id="productDescription" rows="6" maxlength="3000" placeholder="商品の特徴を入力"></textarea>
+        </label>
+        <p class="product-form-error" id="productFormError" hidden></p>
+        <footer>
+          <button type="button" data-action="close-form">キャンセル</button>
+          <button class="is-primary" id="saveProduct" type="submit">保存</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <dialog class="product-confirm-dialog" id="productConfirmDialog">
+      <form method="dialog" id="productConfirmForm">
+        <p>CONFIRM</p>
+        <h2 id="productConfirmTitle">商品を削除</h2>
+        <span id="productConfirmMessage"></span>
+        <footer>
+          <button type="button" data-action="close-confirm">戻る</button>
+          <button class="is-danger" id="confirmProductAction" type="submit">実行する</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <div class="admin-toast" id="productToast" role="status" aria-live="polite"></div>
     <script type="module" src="/assets/js/pages/admin-product.js"></script>
   </body>
 </html>

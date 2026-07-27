@@ -1,428 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <meta name="description" content="Oll Shop ユーザー管理" />
+    <title>ユーザー管理 | Oll Shop Admin</title>
     <link rel="stylesheet" href="/assets/css/main.css" />
     <link rel="icon" href="/favicon.ico" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   </head>
-  <body>
-    <div class="dashboard-inner">
-      <div class="dashboard-main">
-        <aside class="admin-sidebar">
-          <div class="admin-sidebar_header">
-            <img class="admin-sidebar_header-logo" src="/assets/images/logoshop.png" alt="" /> <span>oll Shop</span>
+  <body class="admin-dashboard admin-users-page">
+    <div class="admin-shell">
+      <aside class="admin-sidebar" id="adminSidebar" aria-label="管理メニュー">
+        <div class="admin-sidebar_header">
+          <a class="admin-brand" href="/index.html" aria-label="Oll Shop ホーム"><img class="admin-sidebar_header-logo" src="/assets/images/logoshop.png" alt="" /><span>Oll Shop</span></a>
+          <button class="sidebar-close" type="button" data-action="close-sidebar" aria-label="メニューを閉じる"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg></button>
+        </div>
+        <nav class="admin-sidebar_nav">
+          <p class="sidebar-label">メニュー</p>
+          <a class="admin-sidebar_nav-secondary" href="./dashboard.html"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2" /><rect x="14" y="3" width="7" height="7" rx="2" /><rect x="3" y="14" width="7" height="7" rx="2" /><rect x="14" y="14" width="7" height="7" rx="2" /></svg><span>ダッシュボード</span></a>
+          <a class="admin-sidebar_nav-secondary" href="./orders.html"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M8 8h8M8 12h8M8 16h5" /></svg><span>注文管理</span></a>
+          <a class="admin-sidebar_nav-secondary" href="./products.html"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Z" /><path d="M3 7v10l9 4 9-4V7M12 11v10" /></svg><span>商品管理</span></a>
+          <a class="admin-sidebar_nav-secondary" href="./brands.html"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 9 4 3 4-6 4 6 4-3v9H4V9ZM4 18h16" /></svg><span>ブランド管理</span></a>
+          <a class="admin-sidebar_nav-secondary" href="./tags.html"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7l9 9-7 7-9-9V4Z" /><circle cx="8.5" cy="8.5" r="1.2" /></svg><span>タグ管理</span></a>
+          <a class="admin-sidebar_nav-main" href="./users.html" aria-current="page"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4" /><path d="M2.5 21a6.5 6.5 0 0 1 13 0M16 6.5a3.5 3.5 0 0 1 0 7M17.5 16a5 5 0 0 1 4 5" /></svg><span>ユーザー管理</span></a>
+        </nav>
+        <div class="sidebar-footer"><a class="admin-sidebar_nav-secondary" href="/index.html"><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8M5 10v10h14V10" /></svg><span>ショップへ戻る</span></a><p>Oll Shop Admin</p></div>
+      </aside>
+      <button class="sidebar-backdrop" type="button" data-action="close-sidebar" aria-label="メニューを閉じる" tabindex="-1"></button>
+
+      <main class="dashboard-content">
+        <header class="dashboard-content_header management-heading">
+          <div class="dashboard-heading">
+            <button class="hamburger-btn" type="button" data-action="open-sidebar" aria-label="管理メニューを開く" aria-controls="adminSidebar" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg></button>
+            <div><p class="dashboard-eyebrow">CUSTOMERS</p><h1>ユーザー管理</h1><p class="dashboard-date">登録ユーザーとアカウント状態を管理します。</p></div>
           </div>
-          <nav class="admin-sidebar_nav">
-            <a class="admin-sidebar_nav-secondary" href="./dashboard.html"
-              ><svg class="sidebar-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  d="M4 13.5a1.5 1.5 0 0 1 1.5-1.5H9a1.5 1.5 0 0 1 1.5 1.5V19A1.5 1.5 0 0 1 9 20.5H5.5A1.5 1.5 0 0 1 4 19v-5.5Z
-       M13.5 4A1.5 1.5 0 0 0 12 5.5V9a1.5 1.5 0 0 0 1.5 1.5H19A1.5 1.5 0 0 0 20.5 9V5.5A1.5 1.5 0 0 0 19 4h-5.5Z
-       M12 13.5a1.5 1.5 0 0 1 1.5-1.5H19a1.5 1.5 0 0 1 1.5 1.5V19A1.5 1.5 0 0 1 19 20.5h-5.5A1.5 1.5 0 0 1 12 19v-5.5Z
-       M4 5.5A1.5 1.5 0 0 1 5.5 4H9a1.5 1.5 0 0 1 1.5 1.5V9A1.5 1.5 0 0 1 9 10.5H5.5A1.5 1.5 0 0 1 4 9V5.5Z"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              <span>ダッシュボード</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./orders.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <rect x="4" y="3" width="16" height="18" rx="2" />
-                <path d="M8 7h8M8 11h8M8 15h6" />
-              </svg>
-              <span>注文管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./products.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M3 7l9-4 9 4-9 4-9-4z" />
-                <path d="M3 7v10l9 4 9-4V7" />
-                <path d="M12 11v10" />
-              </svg>
-              <span>商品管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./users.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M3 6h6l2 2h10v10a2 2 0 0 1-2 2H3z" />
-              </svg>
-              <span>カテゴリー管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./users.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-label="ブランド管理"
-              >
-                <path d="M4 9l4 3 4-6 4 6 4-3v9H4V9z" />
-                <path d="M4 18h16" />
-              </svg>
-              <span>ブランド管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./users.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M7 7h6l8 8-6 6-8-8z" />
-                <path d="M3 11h6l6 6-6 6-6-6z" />
-              </svg>
-              <span>タッグ管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="./users.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="8" cy="7" r="3" />
-                <circle cx="17" cy="7" r="2.5" />
-                <path d="M2 19c0-3 3-5.5 6-5.5" />
-                <path d="M12 19c0-2.5 2.5-4.5 5-4.5" />
-              </svg>
-              <span>ユーザー管理</span></a
-            >
-            <a class="admin-sidebar_nav-secondary" href="/index.html"
-              ><svg
-                class="sidebar-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M3 11l9-8 9 8" />
-                <path d="M5 10v10h14V10" />
-              </svg>
-              <span>ホーム</span></a
-            >
-          </nav>
-        </aside>
+        </header>
 
-        <aside class="dashboard-content">
-          <header class="dashboard-content_header">
-            <h3>Dashboard</h3>
-            <select id="rangeFilter" class="filter-select">
-              <option value="LAST_7_DAYS">過去7日間</option>
-              <option value="TODAY">今日</option>
-              <option value="WTD">今週</option>
-              <option value="MTD">今月</option>
-              <option value="YTD">今年</option>
-            </select>
-          </header>
-          <main class="dashboard-content_main">
-            <section class="dashboard">
-              <div class="dashboard_overview">
-                <button class="overview-box is-active" data-metric="revenue">
-                  <div class="overview_title">
-                    <div class="overview_title-text">売上</div>
-                    <svg
-                      class="overview-icon"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="20"
-                      height="20"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.8"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      aria-label="売上"
-                    >
-                      <path d="M4 18v-6" />
-                      <path d="M9 18v-9" />
-                      <path d="M14 18v-12" />
+        <section class="management-summary" aria-label="ユーザー概要">
+          <article><span>ユーザー数</span><strong id="totalUsers">—</strong><small>検索条件に一致</small></article>
+          <article><span>表示中</span><strong id="visibleUsers">—</strong><small>現在のページ</small></article>
+          <article><span>メール認証済み</span><strong id="verifiedUsers">—</strong><small>現在のページ</small></article>
+          <article><span>制限中</span><strong id="restrictedUsers">—</strong><small>現在のページ</small></article>
+        </section>
 
-                      <path d="M6 10l4-4 4 3 5-6" />
-                      <path d="M17 3h3v3" />
-                    </svg>
-                  </div>
-                  <div class="overview_content">
-                    <span class="overview_content-data" id="revenueDelta">-</span>
-                    <div class="overview_content-label">
-                      <div class="percent" id="revenuePecent">-</div>
-                      <div class="filter-lable">先週比</div>
-                    </div>
-                  </div>
-                </button>
-                <button class="overview-box" data-metric="orders">
-                  <div class="overview_title">
-                    <div class="overview_title-text">オーダー回数</div>
-                    <svg
-                      class="overview-icon"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="20"
-                      height="20"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.8"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      aria-label="オーダー回数"
-                    >
-                      <path d="M3 4h2l2.5 11.5a2 2 0 0 0 2 1.5h7.5a2 2 0 0 0 2-1.5L21 8H7" />
+        <section class="management-panel">
+          <form class="user-filters" id="userFilters">
+            <label class="management-search"><span class="sr-only">ユーザーを検索</span><input id="userKeyword" type="search" placeholder="名前・メールアドレスで検索" autocomplete="off" /></label>
+            <button class="is-primary" type="submit">検索</button>
+            <button id="resetUserFilters" type="button">リセット</button>
+          </form>
 
-                      <circle cx="10" cy="20" r="1.5" />
-                      <circle cx="17" cy="20" r="1.5" />
-                    </svg>
-                  </div>
-                  <div class="overview_content">
-                    <span class="overview_content-data" id="orderCount">-</span>
-                    <div class="overview_content-label">
-                      <div class="percent" id="orderCountPercent">-</div>
-                      <div class="filter-lable">先週比</div>
-                    </div>
-                  </div>
-                </button>
-                <button class="overview-box" data-metric="visits">
-                  <div class="overview_title">
-                    <div class="overview_title-text">訪問数</div>
-                    <svg
-                      class="overview-icon"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="20"
-                      height="20"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.8"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      aria-label="訪問数"
-                    >
-                      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
-                      <circle cx="12" cy="12" r="2.5" />
-                    </svg>
-                  </div>
-                  <div class="overview_content">
-                    <span class="overview_content-data" id="visitsCount">-</span>
-                    <div class="overview_content-label">
-                      <div class="percent" id="visitsPercent">-</div>
-                      <div class="filter-lable">先週比</div>
-                    </div>
-                  </div>
-                </button>
-                <button class="overview-box" data-metric="signups">
-                  <div class="overview_title">
-                    <div class="overview_title-text">新規登録数</div>
-                    <svg
-                      class="overview-icon"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="20"
-                      height="20"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.8"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      aria-label="新規登録数"
-                    >
-                      <circle cx="9" cy="7" r="3" />
-                      <path d="M3 19c0-3.3 3-6 6-6s6 2.7 6 6" />
+          <div class="management-error" id="usersError" role="alert" hidden>
+            <div><strong>ユーザーを取得できませんでした</strong><span>接続またはログイン状態を確認してください。</span></div>
+            <button type="button" id="retryUsers">再試行</button>
+          </div>
 
-                      <path d="M17 9v6" />
-                      <path d="M14 12h6" />
-                    </svg>
-                  </div>
-                  <div class="overview_content">
-                    <span class="overview_content-data" id="newUserCount">-</span>
-                    <div class="overview_content-label">
-                      <div class="percent" id="newUserPercent">-</div>
-                      <div class="filter-lable">先週比</div>
-                    </div>
-                  </div>
-                </button>
-              </div>
-              <div class="analytics-card">
-                <aside class="revenue-analytics">
-                  <div class="card-header">
-                    <div class="card-title" id="cardTitle">売上分析</div>
-
-                    <div class="card-filter">
-                      <div class="filter-lable">先週比</div>
-                    </div>
-                  </div>
-                  <div class="revenue_main">
-                    <div class="chart-box">
-                      <canvas id="salesBarChart"></canvas>
-                    </div>
-                  </div>
-                </aside>
-                <aside class="monthly-target">
-                  <div class="card-header">
-                    <h3 class="card-title">月間目標</h3>
-                    <button class="card-more" aria-label="more">⋯</button>
-                  </div>
-
-                  <div class="target-box">
-                    <div class="gauge" aria-label="Monthly target gauge">
-                      <svg class="gauge-svg" viewBox="0 0 240 140" role="img">
-                        <path class="gauge-track" d="M 30 120 A 90 90 0 0 1 210 120" pathLength="100" />
-                        <path class="gauge-fill" d="M 30 120 A 90 90 0 0 1 210 120" pathLength="100" style="stroke-dasharray: 100 100" />
-                        <line class="gauge-needle" x1="120" y1="120" x2="120" y2="30" />
-                        <circle class="gauge-cap" cx="120" cy="120" r="5" />
-                      </svg>
-
-                      <div class="gauge-center">
-                        <div class="gauge-value" id="mtPercent">0%</div>
-                        <div class="gauge-delta" id="mtDelta"><span>先月比+0%</span></div>
-                      </div>
-                    </div>
-
-                    <div class="target-grid">
-                      <div class="target-metric">
-                        <div class="metric-label">目標</div>
-                        <div class="metric-value" id="mtTarget">¥0</div>
-                      </div>
-
-                      <div class="target-metric">
-                        <div class="metric-label">売上</div>
-                        <div class="metric-value" id="mtRevenue">¥0</div>
-                      </div>
-                    </div>
-                  </div>
-                </aside>
-              </div>
-              <div class="revenue-yoy">
-                <div class="chart-card__head">
-                  <div class="chart-card__title" id="yoyChartTitle">売上分析</div>
-                  <div class="chart-card__sub">前年同月比</div>
-                </div>
-
-                <div class="chart-card__body">
-                  <canvas id="revenueYoYBarChart" height="120"></canvas>
-                </div>
-              </div>
-            </section>
-            <div class="dashboard_right">
-              <aside class="dashboard_top">
-                <div class="dashboard_top-header">
-                  <div class="header_title">注文ステータス概要</div>
-                  <button class="btn btn-outline btn-small">詳細</button>
-                </div>
-                <div class="dashboard_top-main">
-                  <div class="status-item">
-                    <span class="status-label">支払い待ち</span>
-                    <span class="status-count">4</span>
-                  </div>
-                  <div class="status-item">
-                    <span class="status-label">発送待ち</span>
-                    <span class="status-count">7</span>
-                  </div>
-                  <div class="status-item">
-                    <span class="status-label">発送済み</span>
-                    <span class="status-count">12</span>
-                  </div>
-                  <div class="status-item">
-                    <span class="status-label">完了</span>
-                    <span class="status-count">32</span>
-                  </div>
-                </div>
-              </aside>
-              <aside class="dashboard_top">
-                <div class="dashboard_top-header">
-                  <div class="header_title">今日の注文数</div>
-                  <button class="btn btn-outline btn-small">詳細</button>
-                </div>
-
-                <div class="dashboard_top-main">
-                  <div class="status-item">
-                    <span class="status-label">新規</span>
-                    <span class="status-count">5</span>
-                  </div>
-                  <div class="status-item">
-                    <span class="status-label">確認待ち</span>
-                    <span class="status-count">2</span>
-                  </div>
-                  <div class="status-item">
-                    <span class="status-label">発送準備</span>
-                    <span class="status-count">3</span>
-                  </div>
-                  <div class="status-item">
-                    <span class="status-label">キャンセル</span>
-                    <span class="status-count">1</span>
-                  </div>
-                </div>
-              </aside>
-              <aside class="dashboard_top dashboard_top--stock">
-                <div class="dashboard_top-header">
-                  <div class="header_title">在庫アラート</div>
-                  <button class="btn btn-outline btn-small">詳細</button>
-                </div>
-
-                <ul class="dashboard_top-main stock-list">
-                  <li class="stock-item is-critical">
-                    <span class="stock-name">Air Max 90</span>
-                    <span class="stock-count">残り 2</span>
-                  </li>
-                  <li class="stock-item is-critical">
-                    <span class="stock-name">Air Max 90</span>
-                    <span class="stock-count">残り 2</span>
-                  </li>
-                  <li class="stock-item is-warning">
-                    <span class="stock-name">NB 574</span>
-                    <span class="stock-count">残り 3</span>
-                  </li>
-                  <li class="stock-item is-warning">
-                    <span class="stock-name">NB 574</span>
-                    <span class="stock-count">残り 3</span>
-                  </li>
-                </ul>
-              </aside>
-            </div>
-          </main>
-        </aside>
-      </div>
+          <div class="management-table-wrap" role="region" aria-label="ユーザー一覧" tabindex="0">
+            <table class="management-table users-table">
+              <thead><tr><th>ユーザー</th><th>電話番号</th><th>メール認証</th><th>登録日</th><th>ステータス</th><th>操作</th></tr></thead>
+              <tbody id="usersTableBody"></tbody>
+            </table>
+            <div class="management-loading" id="usersLoading"><span class="management-spinner"></span><span>ユーザーを読み込んでいます。</span></div>
+            <div class="management-empty" id="usersEmpty" hidden><span>○</span><strong>ユーザーが見つかりません</strong><p>検索キーワードを変更してください。</p></div>
+          </div>
+          <footer class="management-pagination"><p id="userPaginationInfo">0件</p><div><button id="previousUserPage" type="button" aria-label="前のページ">←</button><span id="userPageIndicator">1 / 1</span><button id="nextUserPage" type="button" aria-label="次のページ">→</button></div></footer>
+        </section>
+      </main>
     </div>
-    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-    <script type="module" src="/assets/js/pages/dashboard.js"></script>
+    <div class="user-detail-backdrop" id="userDetailBackdrop" hidden></div>
+    <aside class="user-detail-modal" id="userDetail" role="dialog" aria-modal="true" aria-labelledby="userDetailTitle" aria-hidden="true" inert>
+      <header><div><p>USER DETAIL</p><h2 id="userDetailTitle">ユーザー詳細</h2></div><button type="button" data-action="close-user-detail" aria-label="ユーザー詳細を閉じる">×</button></header>
+      <div class="user-detail-body" id="userDetailBody"></div>
+      <footer id="userDetailFooter"></footer>
+    </aside>
+
+    <dialog class="management-confirm" id="userConfirm">
+      <form method="dialog" id="userConfirmForm"><p>CONFIRM</p><h2 id="userConfirmTitle">アカウント状態を変更</h2><span id="userConfirmMessage"></span><footer><button type="button" data-action="close-user-confirm">戻る</button><button id="confirmUserAction" type="submit">実行する</button></footer></form>
+    </dialog>
+    <div class="management-toast" id="userToast" role="status" aria-live="polite"></div>
+    <script type="module" src="/assets/js/pages/admin-users.js"></script>
   </body>
 </html>

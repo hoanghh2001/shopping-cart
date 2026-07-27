@@ -19,5 +19,5 @@
 @import url("/assets/css/pages/dashboard.css");
 @import url("/assets/css/pages/admin-orders.css");
 @import url("/assets/css/pages/admin-products.css");
-
-
+@import url("/assets/css/pages/admin-management.css");
+@import url("/assets/css/pages/admin-users.css");

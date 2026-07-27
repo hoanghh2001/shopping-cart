@@ -1,0 +1,238 @@
+.admin-users-page .management-table th:first-child,
+.admin-users-page .management-table td:first-child {
+  width: auto;
+  padding-left: 19px;
+}
+
+.users-table {
+  min-width: 900px;
+}
+
+.user-status--banned {
+  background: #fff1d8;
+  color: #98630c;
+}
+
+.user-row-action {
+  text-align: right;
+}
+
+.user-detail-backdrop {
+  position: fixed;
+  z-index: 1090;
+  inset: 0;
+  background: rgba(16, 23, 19, 0.54);
+  backdrop-filter: blur(4px);
+}
+
+.user-detail-modal {
+  position: fixed;
+  z-index: 1100;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: min(680px, calc(100% - 32px));
+  max-height: calc(100vh - 40px);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 28px 80px rgba(16, 23, 19, 0.27);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -47%) scale(0.97);
+  transition: opacity 180ms ease, transform 190ms ease;
+}
+
+.user-detail-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.user-detail-modal > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--manage-line);
+}
+
+.user-detail-body {
+  min-height: 0;
+  padding: 23px 24px 28px;
+  overflow-y: auto;
+}
+
+.user-detail-modal > footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--manage-line);
+}
+
+.user-detail-modal > footer button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #d5ddd8;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--manage-ink);
+  font-weight: 750;
+}
+
+.user-detail-modal > footer .is-primary {
+  border-color: var(--manage-accent);
+  background: var(--manage-accent);
+  color: #fff;
+}
+
+.user-detail-modal > footer .is-warning {
+  border-color: #d9a33f;
+  color: #93600a;
+}
+
+.user-detail-modal > footer .is-danger {
+  border-color: var(--manage-danger);
+  background: var(--manage-danger);
+  color: #fff;
+}
+
+.user-detail-hero {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  gap: 17px;
+  align-items: center;
+}
+
+.user-detail-avatar {
+  display: grid;
+  width: 92px;
+  height: 92px;
+  overflow: hidden;
+  place-items: center;
+  border: 1px solid #dce5df;
+  border-radius: 24px;
+  background: #edf5f0;
+  color: var(--manage-accent);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.65rem;
+  font-weight: 800;
+}
+
+.user-detail-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-detail-hero h3 {
+  margin: 9px 0 5px;
+  color: var(--manage-ink);
+  font-size: 1.1rem;
+}
+
+.user-detail-hero p {
+  margin: 0;
+  color: var(--manage-muted);
+  font-size: 0.76rem;
+}
+
+.user-detail-section {
+  margin-top: 23px;
+  padding-top: 20px;
+  border-top: 1px solid var(--manage-line);
+}
+
+.user-detail-section > h3 {
+  margin: 0 0 12px;
+  font-size: 0.83rem;
+}
+
+.user-detail-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--manage-line);
+  border-radius: 11px;
+  background: var(--manage-line);
+}
+
+.user-detail-list div {
+  padding: 12px;
+  background: #fff;
+}
+
+.user-detail-list dt {
+  margin-bottom: 5px;
+  color: var(--manage-muted);
+  font-size: 0.65rem;
+}
+
+.user-detail-list dd {
+  margin: 0;
+  color: var(--manage-ink);
+  font-size: 0.78rem;
+  font-weight: 720;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 520px) {
+  .user-detail-modal {
+    width: calc(100% - 16px);
+    max-height: calc(100vh - 16px);
+    border-radius: 15px;
+  }
+
+  .user-detail-modal > header,
+  .user-detail-body,
+  .user-detail-modal > footer {
+    padding-right: 17px;
+    padding-left: 17px;
+  }
+
+  .user-detail-hero {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .user-detail-hero > div {
+    min-width: 0;
+  }
+
+  .user-detail-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    font-size: 1.3rem;
+  }
+
+  .user-detail-list {
+    grid-template-columns: 1fr;
+  }
+
+  .user-detail-hero p {
+    overflow-wrap: anywhere;
+  }
+
+  .user-detail-modal > footer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-top: 11px;
+    padding-bottom: 13px;
+  }
+
+  .user-detail-modal > footer button:only-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 680px) {
+  .users-table {
+    min-width: 0;
+  }
+}

@@ -178,10 +178,12 @@ async function loadOrders() {
     const response = await fetchAdminOrders(buildFilters());
     if (currentRequest !== state.requestId) return;
 
+    const page = response?.page ?? response;
     state.orders = Array.isArray(response) ? response : response?.content ?? [];
-    state.page = Number(response?.number ?? state.page);
-    state.totalPages = Math.max(Number(response?.totalPages ?? 1), 1);
-    state.totalElements = Number(response?.totalElements ?? state.orders.length);
+    state.page = Number(page?.number ?? state.page);
+    state.size = Number(page?.size ?? state.size);
+    state.totalPages = Math.max(Number(page?.totalPages ?? 1), 1);
+    state.totalElements = Number(page?.totalElements ?? state.orders.length);
 
     renderOrders();
     renderSummary();
@@ -291,7 +293,8 @@ async function openOrderByIndex(index) {
   ]);
 
   const detail = detailResult.status === "fulfilled" ? detailResult.value : order;
-  const items = itemsResult.status === "fulfilled" ? itemsResult.value : detail.items ?? order.items ?? [];
+  const fetchedItems = itemsResult.status === "fulfilled" && Array.isArray(itemsResult.value) ? itemsResult.value : [];
+  const items = fetchedItems.length ? fetchedItems : detail.items?.length ? detail.items : order.items ?? [];
   const history = historyResult.status === "fulfilled" ? historyResult.value : [];
 
   state.selectedOrder = { ...order, ...detail };
