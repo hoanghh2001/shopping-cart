@@ -54,8 +54,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-                "https://hoangdev.com",
-                "https://www.hoangdev.com",
+                "https://shop.hoangdev.com",
+                "https://www.shop.hoangdev.com",
                 "https://api.hoangdev.com",
                 "https://www.api.hoangdev.com",
                 "http://127.0.0.1:5500",
